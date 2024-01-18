@@ -1,0 +1,2 @@
+features als tensor und nicht liste von tensoren
+oder eben list tuple als input für layer??
