@@ -60,6 +60,7 @@ class MultiheadAttentionLayer(nn.Module):
             torch.Tensor: Output tensor after multi-head attention.
         """
         # Linear projections
+        print(x)
         q = self.W_q(x)
         k = self.W_k(x)
         v = self.W_v(x)

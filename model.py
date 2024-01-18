@@ -12,6 +12,7 @@ class Model(nn.Module):
     def forward(self, signal):
         # Apply WaveletTransformLayer to the input signal
         features = self.wavelet_layer(signal)
+        print(features)
 
         # Apply ProcessingLayer to the features obtained from WaveletTransformLayer
         processing_result = self.processing_layer(features)
@@ -24,7 +25,7 @@ if __name__=="__main__":
     model = Model()
 
     # 
-    x = torch.tensor([1.0, 2.0, 3.0, 4.0], dtype=torch.float32)
+    x = torch.tensor([1.0, 2.0, 3.0, 4.0], dtype=torch.float32).unsqueeze(-1)
 
     # Call the forward method to obtain the output
     output = model(x)  # Add batch dimension using unsqueeze if needed
