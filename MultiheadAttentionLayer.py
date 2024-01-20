@@ -21,8 +21,7 @@ class MultiheadAttentionLayer(nn.Module):
         dropout (nn.Dropout): Dropout layer.
     """
 
-
-    def __init__(self, input_size, num_heads, dropout=0.1, trainable=True):
+    def __init__(self, input_size, num_heads, is_row_vector=True, dropout=0.1, trainable=True):
         super(MultiheadAttentionLayer, self).__init__()
 
         assert input_size % num_heads == 0, "Input size must be divisible by the number of heads."
@@ -30,6 +29,7 @@ class MultiheadAttentionLayer(nn.Module):
         self.input_size = input_size
         self.num_heads = num_heads
         self.head_size = input_size // num_heads
+        self.modify_for_row_vectors = is_row_vector
 
         # Linear projections for Query, Key, and Value
         self.W_q = nn.Linear(input_size, input_size, bias=False)
@@ -60,7 +60,6 @@ class MultiheadAttentionLayer(nn.Module):
             torch.Tensor: Output tensor after multi-head attention.
         """
         # Linear projections
-        print(x)
         q = self.W_q(x)
         k = self.W_k(x)
         v = self.W_v(x)
@@ -71,7 +70,7 @@ class MultiheadAttentionLayer(nn.Module):
         v = v.view(v.size(0), -1, self.num_heads, self.head_size).transpose(1, 2)
 
         # Scaled Dot-Product Attention
-        attention_based_v = attention(q, k, v)
+        attention_based_v = attention(q, k, v, self.modify_for_row_vectors)
 
         # Concatenate and project back to the original size
         attention_based_v = attention_based_v.transpose(1, 2).contiguous().view(x.size(0), -1, self.input_size)
