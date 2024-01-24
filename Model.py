@@ -2,23 +2,25 @@ import torch
 import torch.nn as nn
 from Signal_to_Features import signal_to_wavelet_features
 from ProcessingLayer import ProcessingLayer
+from End_Layers import L2BinaryClassifier
 
-class Model(nn.Module):
+class Feature2LBinaryClassifier(nn.Module):
     def __init__(self, signal_size, feature_function):
-        super(Model, self).__init__()
+        super(Feature2LBinaryClassifier, self).__init__()
         self.signal_size = signal_size
         self.feature_function = feature_function
         self.processing_layer = ProcessingLayer(self.signal_size, self.feature_function)
+        self.last_layer = L2BinaryClassifier(signal_size, signal_size)
 
     def forward(self, signal):
         # Apply ProcessingLayer to the features obtained from WaveletTransformLayer
         processing_result = self.processing_layer(signal)
-        return processing_result
+        return self.last_layer(processing_result)
 
 
 if __name__=="__main__":
     # Create an instance of the Model
-    model = Model(7, signal_to_wavelet_features)
+    model = Feature2LBinaryClassifier(7, signal_to_wavelet_features)
 
     # Create a test batch with 2 elements
     x1 = torch.tensor([1.0, 2.0, 3.0, 4.0, 1.33, 2.44, 7], dtype=torch.float32)
