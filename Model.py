@@ -4,6 +4,20 @@ from Signal_to_Features import signal_to_wavelet_features
 from ProcessingLayer import ProcessingLayer
 from End_Layers import L2BinaryClassifier
 
+
+
+class SimpleBinaryClassifier(nn.Module):
+    def __init__(self, signal_size):
+        super(SimpleBinaryClassifier, self).__init__()
+        self.layer = L2BinaryClassifier(signal_size, signal_size)
+
+    def forward(self, signal):
+        # Apply ProcessingLayer to the features obtained from WaveletTransformLayer
+        wave_coeff = signal_to_wavelet_features(signal, squeeze=True)
+        out = self.layer(wave_coeff)
+        return out
+
+
 class Feature2LBinaryClassifier(nn.Module):
     def __init__(self, signal_size, feature_function):
         super(Feature2LBinaryClassifier, self).__init__()

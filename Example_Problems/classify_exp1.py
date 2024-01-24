@@ -78,12 +78,14 @@ def save_to_pickle(data, filename):
 
 if __name__ == "__main__":
     # Set the number of training samples
-    num_samples = 999
+    num_samples = 9
 
     # Generate training data
-    training_data = generate_training_data(num_samples, num_points=128, func=simple_cos_freq)
-    #print(training_data)
-
+    training_data = generate_training_data(num_samples, num_points=12, func=simple_cos_freq)
+    for x in training_data:
+        print(x)
+        print()
+  
     # Save training data to a pickle file
-    save_to_pickle(training_data, "test_data_999_simple.pkl")
+    #save_to_pickle(training_data, "test_data_999_simple.pkl")
 

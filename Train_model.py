@@ -6,6 +6,8 @@ import pickle
 from Model import Feature2LBinaryClassifier as model
 import matplotlib.pyplot as plt
 from Signal_to_Features import signal_to_wavelet_features
+from End_Layers import L2BinaryClassifier
+from Model import SimpleBinaryClassifier
 
 
 def load_from_pickle(filename):
@@ -23,6 +25,8 @@ def preprocess_data(file_dest):
     # Convert to PyTorch tensors
     inputs = torch.stack([item[0] for item in data])
     labels = torch.stack([item[1] for item in data])
+    print(inputs[:10])
+    print(labels[:10])
     
     return inputs, labels
 
@@ -50,21 +54,20 @@ def train_model(model, data_loader, criterion, optimizer, epochs=1000):
                 return model
         print(f'Epoch [{epoch + 1}/{epochs}], Loss: {loss.item():.4f}')
         #if (epoch + 1) % 100 == 0:
-            
-
     return model
 
 
 def train(number):
-    my_model = model(128, signal_to_wavelet_features)
+    #my_model = model(128, signal_to_wavelet_features)
+    my_model = SimpleBinaryClassifier(128)
     model_path = f"model_pre_training_{number}"  # Updated model_path with f-string
-    # torch.save(my_model.state_dict(), model_path)
-    my_criterion = nn.BCEWithLogitsLoss()  # Use BCEWithLogitsLoss for binary classification
+    torch.save(my_model.state_dict(), model_path)
+    my_criterion = nn.BCELoss()  # Use BCEWithLogitsLoss for binary classification
     my_optimizer = optim.Adam(my_model.parameters(), lr=0.01)
-    my_batch_size = 128
+    my_batch_size = 512
     my_num_epochs = 1000  
 
-    inputs, labels = preprocess_data("Example_Problems/training_data_99999_128.pkl")
+    inputs, labels = preprocess_data("Example_Problems/training_data_9999_simple.pkl")
 
     my_dataset = TensorDataset(inputs, 
                                labels)
