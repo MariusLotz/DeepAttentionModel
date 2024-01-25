@@ -1,6 +1,9 @@
+"""not working yet
+goal is to get a summary like in """
+
 import torch
 from torchsummary import summary
-"""not working ywt"""
+
 # Load the saved model architecture and weights
 model = torch.load('Models/model_pre_training_1')
 model.eval()

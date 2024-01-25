@@ -3,19 +3,6 @@ import random
 import pickle
 import torch
 
-def simple_cos_freq(category, num_points=128):
-    time = np.arange(num_points)
-    amplitude = random.uniform(1, 10.0)
-
-    if category == 1:
-        frequency = random.uniform(50.0, 100.0)
-    else:
-        frequency = random.uniform(1, 10.0)
-    cos_wave = amplitude * np.cos(2 * np.pi * time * frequency)  # Regular Cosine pattern
-    signal = torch.tensor(cos_wave, dtype=torch.float32)
-    return signal, torch.tensor(category, dtype=torch.float32)
-    
-
 def create_cosine_wave(category, num_points=128):
     """
     Create a synthetic signal with a cosine wave pattern.
@@ -81,11 +68,9 @@ if __name__ == "__main__":
     num_samples = 9
 
     # Generate training data
-    training_data = generate_training_data(num_samples, num_points=12, func=simple_cos_freq)
-    for x in training_data:
-        print(x)
-        print()
-  
+    training_data = generate_training_data(num_samples, num_points=12, func=create_cosine_wave)
+   
+
     # Save training data to a pickle file
-    #save_to_pickle(training_data, "test_data_999_simple.pkl")
+    # save_to_pickle(training_data, "training_data_99999_1.pkl")
 
