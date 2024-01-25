@@ -1,7 +1,7 @@
 import pywt
 import torch
 
-def signal_to_wavelet_features(signal, wavelet='db2', squeeze=False):
+def signal_to_wavelet_features(signal, wavelet='db1', squeeze=False):
     """
     Transform a 1D signal into wavelet domain features using discrete wavelet transform.
 
@@ -34,7 +34,6 @@ def example_signal_to_wavelet_features():
     print()
     wavelet_features = signal_to_wavelet_features(sample_signal, squeeze=False)
     print(wavelet_features)
-
 
 
 if __name__=="__main__":

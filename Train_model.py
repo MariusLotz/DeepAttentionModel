@@ -4,11 +4,10 @@ import torch.optim as optim
 from torch.utils.data import DataLoader, TensorDataset
 import pickle
 from Models import Feature2LBinaryClassifier 
-from Signal_to_Features import signal_to_wavelet_features
 from End_Layers import L2BinaryClassifier
 from Models import SimpleBinaryClassifier
 from datetime import datetime
-
+from Signal_to_Features import signal_to_wavelet_features
 
 def load_from_pickle(filename):
     """
@@ -131,7 +130,7 @@ def train_Feature2LBinaryClassifier():
     """
     Train the SimpleBinaryClassifier model with predefined parameters.
     """
-    signalsize = 128
+    signalsize = 16
     feature_function = signal_to_wavelet_features
     # Load training data:
     inputs, labels = preprocess_data("Example_Problems/training_data_9999_simple_16.pkl")
@@ -140,5 +139,5 @@ def train_Feature2LBinaryClassifier():
                             optimizer=optim.Adam, batchsize=512, num_epochs=1000, inputs=inputs, outputs=labels)
 
 if __name__ == "__main__":
-    train_SimpleBinaryClassifier()
-    #train_Feature2LBinaryClassifier()
+    #train_SimpleBinaryClassifier()
+    train_Feature2LBinaryClassifier()
