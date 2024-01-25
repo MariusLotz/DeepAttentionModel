@@ -4,7 +4,7 @@ import pickle
 import torch
 
 
-def simple_cos_freq(category, num_points=128):
+def simple_cos_freq(category, num_points=16):
     time = np.arange(num_points)
     amplitude = random.uniform(1, 10.0)
 
@@ -45,13 +45,10 @@ def save_to_pickle(data, filename):
 
 if __name__ == "__main__":
     # Set the number of training samples
-    num_samples = 9
+    num_samples = 9999
 
     # Generate training data
-    training_data = generate_training_data(num_samples, num_points=12, func=simple_cos_freq)
-    for x in training_data:
-        print(x)
-        print()
-
+    training_data = generate_training_data(num_samples, num_points=16, func=simple_cos_freq)
+ 
     #Save training data to a pickle file
-    #save_to_pickle(training_data, "test_data_999_simple.pkl")
+    save_to_pickle(training_data, "training_data_9999_simple_16.pkl")
