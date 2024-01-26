@@ -1,7 +1,7 @@
 import numpy as np
 import random
-import pickle
 import torch
+from Helper_Functions import save_to_pickle, generate_training_data
 
 def create_cosine_wave(category, num_points=128):
     """
@@ -35,32 +35,6 @@ def create_cosine_wave(category, num_points=128):
             signal[random_start + i] += additional_cos_wave[i]
 
     return signal, torch.tensor(category, dtype=torch.float32)
-
-
-def generate_training_data(batch_size, num_points, func):
-    """
-    Generate training data with random features and labels.
-
-    Args:
-        batch_size (int): Number of training samples to generate.
-
-    Returns:
-        list: List of tuples, each containing a feature tensor and its corresponding label tensor.
-    """
-    data = [(func(random.choice([0, 1]), num_points)) for _ in range(batch_size)]
-    return data
-
-
-def save_to_pickle(data, filename):
-    """
-    Save data to a pickle file.
-
-    Args:
-        data (list): Data to be saved.
-        filename (str): Name of the pickle file.
-    """
-    with open(filename, 'wb') as file:
-        pickle.dump(data, file)
 
 
 if __name__ == "__main__":

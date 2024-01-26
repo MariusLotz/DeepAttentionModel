@@ -2,26 +2,10 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader, TensorDataset
-import pickle
-from Models import Feature2LBinaryClassifier 
-from End_Layers import L2BinaryClassifier
-from Models import SimpleBinaryClassifier
+from Models import Feature2LBinaryClassifier, SimpleBinaryClassifier, RawSimpleBinaryClassifier
 from datetime import datetime
 from Signal_to_Features import signal_to_wavelet_features
-
-def load_from_pickle(filename):
-    """
-    Load data from a pickle file.
-
-    Parameters:
-    - filename (str): The path to the pickle file.
-
-    Returns:
-    - data: The loaded data.
-    """
-    with open(filename, 'rb') as file:
-        data = pickle.load(file)
-    return data
+from Helper_Functions import load_from_pickle
 
 
 def preprocess_data(file_dest):
@@ -100,7 +84,7 @@ def train_model_with_params(model_class, *param, losscriterion, optimizer, batch
     current_date_string = current_date_time.strftime("%Y-%m-%d")
 
     my_model_untrained = model_class(*param)
-    model_path_untrained = f"{model_class.__name__}_{current_date_string}_untrained"
+    model_path_untrained = f"Models/{model_class.__name__}_{current_date_string}_untrained"
     torch.save(my_model_untrained.state_dict(), model_path_untrained)
 
     my_criterion = losscriterion()
@@ -111,33 +95,46 @@ def train_model_with_params(model_class, *param, losscriterion, optimizer, batch
 
     trained_model = train_model(my_model_untrained, my_data_loader, my_criterion, my_optimizer, epochs=num_epochs)
 
-    model_path_trained = f"{model_class.__name__}_{current_date_string}_trained"
+    model_path_trained = f"Models/{model_class.__name__}_{current_date_string}_trained"
     torch.save(trained_model.state_dict(), model_path_trained)
+
+
+def train_RawSimpleBinaryClassifier():
+    """
+    Train the SimpleBinaryClassifier model with predefined parameters.
+    """
+    signalsize = 128
+    # Load training data:
+    inputs, labels = preprocess_data("Example_Problems/Data/training_data_9999_simple_32.pkl")
+    # Create and save model pretrained and posttrained
+    train_model_with_params(RawSimpleBinaryClassifier, signalsize, losscriterion=nn.BCELoss, 
+                            optimizer=optim.Adam, batchsize=512, num_epochs=1000, inputs=inputs, outputs=labels)
 
 
 def train_SimpleBinaryClassifier():
     """
     Train the SimpleBinaryClassifier model with predefined parameters.
     """
-    signalsize = 16
+    signalsize = 128
     # Load training data:
-    inputs, labels = preprocess_data("Example_Problems/training_data_9999_simple_16.pkl")
+    inputs, labels = preprocess_data("Example_Problems/training_data_9999_simple_128.pkl")
     # Create and save model pretrained and posttrained
     train_model_with_params(SimpleBinaryClassifier, signalsize, losscriterion=nn.BCELoss, 
                             optimizer=optim.Adam, batchsize=512, num_epochs=1000, inputs=inputs, outputs=labels)
+
 
 def train_Feature2LBinaryClassifier():
     """
     Train the SimpleBinaryClassifier model with predefined parameters.
     """
-    signalsize = 16
+    signalsize = 128
     feature_function = signal_to_wavelet_features
     # Load training data:
-    inputs, labels = preprocess_data("Example_Problems/training_data_9999_simple_16.pkl")
     # Create and save model pretrained and posttrained
     train_model_with_params(Feature2LBinaryClassifier, signalsize, feature_function, losscriterion=nn.BCELoss, 
                             optimizer=optim.Adam, batchsize=512, num_epochs=1000, inputs=inputs, outputs=labels)
 
 if __name__ == "__main__":
+    #train_RawSimpleBinaryClassifier()
     #train_SimpleBinaryClassifier()
     train_Feature2LBinaryClassifier()

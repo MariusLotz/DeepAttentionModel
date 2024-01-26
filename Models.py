@@ -5,6 +5,37 @@ from ProcessingLayer import ProcessingLayer
 from End_Layers import L2BinaryClassifier
 
 
+class RawSimpleBinaryClassifier(nn.Module):
+    """
+    SimpleBinaryClassifier is a basic binary classifier using a specified binary classification layer.
+
+    Parameters:
+    - signal_size (int): The size of the input signal.
+
+    Attributes:
+    - layer (L2BinaryClassifier): Binary classification layer.
+
+    """
+    def __init__(self, signal_size):
+        super(RawSimpleBinaryClassifier, self).__init__()
+        self.layer = L2BinaryClassifier(signal_size, signal_size)
+
+    def forward(self, signal):
+        """
+        Forward pass of the SimpleBinaryClassifier.
+
+        Parameters:
+        - signal (torch.Tensor): Input signal.
+
+        Returns:
+        - torch.Tensor: Output of the binary classification layer.
+
+        """
+        # Apply ProcessingLayer to the features obtained from WaveletTransformLayer
+        out = self.layer(signal)
+        return out
+    
+
 class SimpleBinaryClassifier(nn.Module):
     """
     SimpleBinaryClassifier is a basic binary classifier using a specified binary classification layer.
@@ -93,6 +124,7 @@ def test_model(Model, *args):
     print(batch)
     output = model(batch)
     print(output)
+
 
 if __name__=="__main__":
     signalsize = 7
