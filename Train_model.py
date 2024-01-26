@@ -130,6 +130,7 @@ def train_Feature2LBinaryClassifier():
     signalsize = 128
     feature_function = signal_to_wavelet_features
     # Load training data:
+    inputs, labels = preprocess_data("Example_Problems/Data/training_data_9999_simple_128.pkl")
     # Create and save model pretrained and posttrained
     train_model_with_params(Feature2LBinaryClassifier, signalsize, feature_function, losscriterion=nn.BCELoss, 
                             optimizer=optim.Adam, batchsize=512, num_epochs=1000, inputs=inputs, outputs=labels)
