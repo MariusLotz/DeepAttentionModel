@@ -6,6 +6,7 @@ from Models import Feature2LBinaryClassifier, SimpleBinaryClassifier, RawSimpleB
 from datetime import datetime
 from Signal_to_Features import signal_to_wavelet_features
 from Helper_Functions import load_from_pickle
+from Example_Problems.FordA import FordA_preprocessing
 
 
 def preprocess_data(file_dest):
@@ -127,13 +128,14 @@ def train_Feature2LBinaryClassifier():
     """
     Train the SimpleBinaryClassifier model with predefined parameters.
     """
-    signalsize = 128
     feature_function = signal_to_wavelet_features
     # Load training data:
-    inputs, labels = preprocess_data("Example_Problems/Data/training_data_9999_simple_128.pkl")
+    labels, inputs = FordA_preprocessing()
+    signalsize = inputs.size(1)
+    print(signalsize)
     # Create and save model pretrained and posttrained
     train_model_with_params(Feature2LBinaryClassifier, signalsize, feature_function, losscriterion=nn.BCELoss, 
-                            optimizer=optim.Adam, batchsize=512, num_epochs=1000, inputs=inputs, outputs=labels)
+                            optimizer=optim.Adam, batchsize=512, num_epochs=100, inputs=inputs, outputs=labels)
 
 if __name__ == "__main__":
     #train_RawSimpleBinaryClassifier()
