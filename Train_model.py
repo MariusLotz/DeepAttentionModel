@@ -86,7 +86,7 @@ def train_model_with_params(model_class, *param, losscriterion, optimizer, batch
 
     my_model_untrained = model_class(*param)
     model_path_untrained = f"Models/{model_class.__name__}_{current_date_string}_untrained"
-    torch.save(my_model_untrained.state_dict(), model_path_untrained)
+    torch.save(my_model_untrained, model_path_untrained)
 
     my_criterion = losscriterion()
     my_optimizer = optimizer(my_model_untrained.parameters())
@@ -97,7 +97,7 @@ def train_model_with_params(model_class, *param, losscriterion, optimizer, batch
     trained_model = train_model(my_model_untrained, my_data_loader, my_criterion, my_optimizer, epochs=num_epochs)
 
     model_path_trained = f"Models/{model_class.__name__}_{current_date_string}_trained"
-    torch.save(trained_model.state_dict(), model_path_trained)
+    torch.save(trained_model, model_path_trained)
 
 
 def train_RawSimpleBinaryClassifier():
