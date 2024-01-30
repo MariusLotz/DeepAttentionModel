@@ -104,24 +104,24 @@ def train_RawSimpleBinaryClassifier():
     """
     Train the SimpleBinaryClassifier model with predefined parameters.
     """
-    signalsize = 128
     # Load training data:
-    inputs, labels = preprocess_data("Example_Problems/Data/training_data_9999_simple_32.pkl")
+    labels, inputs = FordA_preprocessing()
+    signalsize = inputs.size(1)
     # Create and save model pretrained and posttrained
     train_model_with_params(RawSimpleBinaryClassifier, signalsize, losscriterion=nn.BCELoss, 
-                            optimizer=optim.Adam, batchsize=512, num_epochs=1000, inputs=inputs, outputs=labels)
+                            optimizer=optim.Adam, batchsize=512, num_epochs=100, inputs=inputs, outputs=labels)
 
 
 def train_SimpleBinaryClassifier():
     """
     Train the SimpleBinaryClassifier model with predefined parameters.
     """
-    signalsize = 128
     # Load training data:
-    inputs, labels = preprocess_data("Example_Problems/training_data_9999_simple_128.pkl")
+    labels, inputs = FordA_preprocessing()
+    signalsize = inputs.size(1)
     # Create and save model pretrained and posttrained
     train_model_with_params(SimpleBinaryClassifier, signalsize, losscriterion=nn.BCELoss, 
-                            optimizer=optim.Adam, batchsize=512, num_epochs=1000, inputs=inputs, outputs=labels)
+                            optimizer=optim.Adam, batchsize=512, num_epochs=100, inputs=inputs, outputs=labels)
 
 
 def train_Feature2LBinaryClassifier():
@@ -132,12 +132,12 @@ def train_Feature2LBinaryClassifier():
     # Load training data:
     labels, inputs = FordA_preprocessing()
     signalsize = inputs.size(1)
-    print(signalsize)
+
     # Create and save model pretrained and posttrained
     train_model_with_params(Feature2LBinaryClassifier, signalsize, feature_function, losscriterion=nn.BCELoss, 
                             optimizer=optim.Adam, batchsize=512, num_epochs=100, inputs=inputs, outputs=labels)
 
 if __name__ == "__main__":
-    #train_RawSimpleBinaryClassifier()
-    #train_SimpleBinaryClassifier()
-    train_Feature2LBinaryClassifier()
+    train_RawSimpleBinaryClassifier()
+    train_SimpleBinaryClassifier()
+    #train_Feature2LBinaryClassifier()
