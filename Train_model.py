@@ -139,5 +139,5 @@ def train_Feature2LBinaryClassifier():
 
 if __name__ == "__main__":
     train_RawSimpleBinaryClassifier()
-    train_SimpleBinaryClassifier()
+    #train_SimpleBinaryClassifier()
     #train_Feature2LBinaryClassifier()

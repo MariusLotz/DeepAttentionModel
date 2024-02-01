@@ -6,7 +6,14 @@ from Example_Problems.FordA import FordA_preprocessing
 import numpy as np
 
 
-def plot_confusion_matrix(conf_matrix, output_file="confusion_matrix1.png"):
+def plot_confusion_matrix(conf_matrix, output_file="confusion_matrix.png"):
+    """
+    Plots and saves the confusion matrix as a heatmap.
+
+    Parameters:
+    - conf_matrix (numpy.ndarray): Confusion matrix to be visualized.
+    - output_file (str): File path to save the confusion matrix plot.
+    """
     sns.heatmap(conf_matrix, annot=True, fmt="d", cmap="Blues", cbar=False)
     plt.xlabel("Predicted")
     plt.ylabel("True")
@@ -15,130 +22,117 @@ def plot_confusion_matrix(conf_matrix, output_file="confusion_matrix1.png"):
     plt.show()
 
 
-def print_xth_to_yth(x,y, model, test_inputs, test_labels, device=torch.device('cuda' if torch.cuda.is_available() else 'cpu')):
-    model.eval()  # Set the model to evaluation mode
-
-    # Move inputs and labels to the specified device
-    test_inputs, test_labels = test_inputs.to(device), test_labels.to(device)
-
-    with torch.no_grad():
-        outputs = model(test_inputs)
-        predictions = torch.round(outputs)
-    
-    print("Values:")
-    print(test_labels[x:y+1])
-    print()
-    print("Model predictions:")
-    print(predictions[x:y+1])
-    print()
-    print(outputs[x:y+1])
-
-
 def model_prediction(model, test_input, device=torch.device('cuda' if torch.cuda.is_available() else 'cpu')):
+    """
+    Make a single prediction using the provided model.
+
+    Parameters:
+    - model (torch.nn.Module): PyTorch model for prediction.
+    - test_input (torch.Tensor): Input data for making a prediction.
+    - device (torch.device): Device for model computation.
+
+    Returns:
+    - torch.Tensor: Rounded prediction.
+    """
     model.eval()
-    probability = model(test_input.torchno_grad)
+    with torch.no_grad():
+        probability = model(test_input)
     return torch.round(probability)
 
 
 def model_predictions(model, test_inputs, device=torch.device('cuda' if torch.cuda.is_available() else 'cpu')):
+    """
+    Make predictions for a batch of inputs using the provided model.
+
+    Parameters:
+    - model (torch.nn.Module): PyTorch model for predictions.
+    - test_inputs (torch.Tensor): Batch of input data.
+    - device (torch.device): Device for model computation.
+
+    Returns:
+    - torch.Tensor: Rounded predictions.
+    """
     model.eval()  # Set the model to evaluation mode
 
-    # Move inputs and labels to the specified device
-    test_inputs, test_labels = test_inputs.to(device), test_labels.to(device)
-
     with torch.no_grad():
-        probabilities= model(test_inputs)
+        probabilities = model(test_inputs)
         predictions = torch.round(probabilities)
     return predictions
 
-#models = {'model1': model1, 'model2': model2}
-def compare_models(**model, test_inputs, test_labels, device=torch.device('cuda' if torch.cuda.is_available() else 'cpu')):
-    modelnames_list = []
-    metrics_list = []
+
+def compare_models(models, test_inputs, test_labels, metric=accuracy_score):
+    """
+    Compare multiple models based on a specified metric.
+
+    Parameters:
+    - models (dict): Dictionary of model names and corresponding PyTorch models.
+    - test_inputs (torch.Tensor): Batch of input data.
+    - test_labels (torch.Tensor): Ground truth labels.
+    - metric (function): Evaluation metric function.
+
+    Returns:
+    - tuple: Lists of model names and corresponding metric values.
+    """
+    model_name_list = []
+    metric_list = []
     for model_name, model in models.items():
-        modelnames_list.append(model_name)
-        metric = model_metrics(model, test_inputs, test_labels)
-        metrics_list.append(metric)
+        model_name_list.append(model_name)
+        predictions = model_predictions(model, test_inputs)
+        metric_value = metric(test_labels.cpu().numpy(), predictions.cpu().numpy())
+        metric_list.append(metric_value)
+    return model_name_list, metric_list
 
 
-def model_metrics(model, test_inputs, test_labels, device=torch.device('cuda' if torch.cuda.is_available() else 'cpu')):
+def print_compared_models(model_name_list, metric_list):
+    """
+    Print the compared models and their corresponding metric values.
 
-    # Convert predictions and labels to numpy arrays
+    Parameters:
+    - model_name_list (list): List of model names.
+    - metric_list (list): List of metric values.
+    """
+    for model_name, metric_value in zip(model_name_list, metric_list):
+        print(f'{model_name}: {metric_value}')
+
+
+def confusion_matrix(model, test_inputs, test_labels):
+    """
+    Evaluate a model's performance using metrics and plot the confusion matrix.
+
+    Parameters:
+    - model (torch.nn.Module): PyTorch model to be evaluated.
+    - test_inputs (torch.Tensor): Batch of input data.
+    - test_labels (torch.Tensor): Ground truth labels.
+
+    Returns:
+    - dict: Dictionary containing evaluation metrics.
+    """
     y_pred = model_predictions(model, test_inputs).cpu().numpy()
     y_true = test_labels.cpu().numpy()
 
-    # Calculate evaluation metrics
     accuracy = accuracy_score(y_true, y_pred)
     precision = precision_score(y_true, y_pred)
     recall = recall_score(y_true, y_pred)
     f1 = f1_score(y_true, y_pred)
 
-    # Generate confusion matrix
     conf_matrix = confusion_matrix(y_true, y_pred)
 
-    # Print metrics and confusion matrix
-    print(f"Accuracy: {accuracy:.4f}")
-    print(f"Precision: {precision:.4f}")
-    print(f"Recall: {recall:.4f}")
-    print(f"F1 Score: {f1:.4f}")
-    print("Confusion Matrix:")
     print(conf_matrix)
 
-    # Plot and save confusion matrix
     plot_confusion_matrix(conf_matrix, output_file="confusion_matrix.png")
 
-    # Return metrics as a dictionary
-    metrics = {
-        'accuracy': accuracy,
-        'precision': precision,
-        'recall': recall,
-        'f1_score': f1,
-        'confusion_matrix': conf_matrix
-    }
+    return {'accuracy': accuracy, 'precision': precision, 'recall': recall, 'f1': f1}
 
-    return metrics
+def Test_framework():
+    labels, inputs = FordA_preprocessing(True)
+    models = {'Feature2LBinaryClassifier': torch.load('Models/Feature2LBinaryClassifier_2024-01-30_trained'),
+            'SimpleBinaryClassifier': torch.load('Models/SimpleBinaryClassifier_2024-01-30_trained'),
+            'RawSimpleBinaryClassifier':torch.load('Models/RawSimpleBinaryClassifier_2024-02-01_trained')}
 
-def evaluate_model(model, test_inputs, test_labels, device=torch.device('cuda' if torch.cuda.is_available() else 'cpu')):
+    model_name_list, metric_list = compare_models(models, inputs, labels)
+    print_compared_models(model_name_list, metric_list)
 
-    # Convert predictions and labels to numpy arrays
-    y_pred = model_predictions(model, test_inputs).cpu().numpy()
-    y_true = test_labels.cpu().numpy()
-
-    # Calculate evaluation metrics
-    accuracy = accuracy_score(y_true, y_pred)
-    precision = precision_score(y_true, y_pred)
-    recall = recall_score(y_true, y_pred)
-    f1 = f1_score(y_true, y_pred)
-
-    # Generate confusion matrix
-    conf_matrix = confusion_matrix(y_true, y_pred)
-
-    # Print metrics and confusion matrix
-    print(f"Accuracy: {accuracy:.4f}")
-    print(f"Precision: {precision:.4f}")
-    print(f"Recall: {recall:.4f}")
-    print(f"F1 Score: {f1:.4f}")
-    print("Confusion Matrix:")
-    print(conf_matrix)
-
-    # Plot and save confusion matrix
-    plot_confusion_matrix(conf_matrix, output_file="confusion_matrix.png")
-
-    # Return metrics as a dictionary
-    metrics = {
-        'accuracy': accuracy,
-        'precision': precision,
-        'recall': recall,
-        'f1_score': f1,
-        'confusion_matrix': conf_matrix
-    }
-
-    return metrics
 
 if __name__ == "__main__":
-    # Assuming you have a PyTorch model named 'model'
-    labels, inputs = FordA_preprocessing(True)
-    model = torch.load('Models/Feature2LBinaryClassifier_2024-01-30_trained')
-    # Assuming you have test_inputs and test_labels as PyTorch tensors
-    evaluate_model(model, inputs, labels, device=torch.device('cuda' if torch.cuda.is_available() else 'cpu'))
-    #print_xth_to_yth(0,10, model, inputs, labels, device=torch.device('cpu'))
+    Test_framework()
+    
