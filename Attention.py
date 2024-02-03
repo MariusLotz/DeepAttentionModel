@@ -1,7 +1,7 @@
 import torch
 import math
 
-def attention_matrix(q, k,modify_for_row_vectors, dropout=None, mask=None):
+def attention_matrix(q, k, dropout=None, mask=None):
     """
     Compute the attention matrix using scaled dot-product attention.
 
@@ -15,10 +15,8 @@ def attention_matrix(q, k,modify_for_row_vectors, dropout=None, mask=None):
         torch.Tensor: Attention matrix.
     """
     d_k = q.size(-1)
-    if modify_for_row_vectors:
-        scores = torch.matmul(q, k.transpose(-2, -1)) / math.sqrt(d_k)
-    else:
-        scores = torch.matmul(q.transpose(-2, -1), k) / math.sqrt(d_k)
+    print(d_k)
+    scores = torch.matmul(q, k.transpose(-2, -1)) / math.sqrt(d_k)
 
     # Apply attention mask if provided
     if mask is not None:
@@ -33,7 +31,7 @@ def attention_matrix(q, k,modify_for_row_vectors, dropout=None, mask=None):
     return att_matrix
 
 
-def attention(q, k, v, modify_for_row_vectors, dropout=None, mask=None):
+def attention(q, k, v, dropout=None, mask=None):
     """
     Compute the attention-weighted values.
 
@@ -47,6 +45,9 @@ def attention(q, k, v, modify_for_row_vectors, dropout=None, mask=None):
     Returns:
         torch.Tensor: Attention-weighted sum of values.
     """
-    att_matrix = attention_matrix(q, k, modify_for_row_vectors, dropout=dropout, mask=mask)
+    att_matrix = attention_matrix(q, k, dropout=dropout, mask=mask)
+    print(att_matrix)
+    print(v)
     weighted_sum = torch.matmul(att_matrix, v)
+    print(weighted_sum)
     return weighted_sum

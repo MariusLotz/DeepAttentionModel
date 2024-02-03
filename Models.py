@@ -3,6 +3,7 @@ import torch.nn as nn
 from Signal_to_Features import signal_to_wavelet_features
 from ProcessingLayer import ProcessingLayer
 from End_Layers import L2BinaryClassifier
+from torchsummary import summary # not working yet
 
 
 class RawSimpleBinaryClassifier(nn.Module):
@@ -116,18 +117,19 @@ def test_model(Model, *args):
 
     """
     model = Model(*args)
+    #summary(model, signalsize, 2)
     # Create a test batch with 2 elements
     x1 = torch.tensor([1.0, 2.0, 3.0, 4.0, 1.33, 2.44, 7], dtype=torch.float32)
     x2 = torch.tensor([5.0, 6.0, 7.0, 8.0, 1.45, 2.89, 8], dtype=torch.float32)
     # Combine the elements into a batch
     batch = torch.stack([x1, x2])
-    print(batch)
+    #print(batch)
     output = model(batch)
-    print(output)
+    #print(output)
 
 
 if __name__=="__main__":
     signalsize = 7
-    test_model(SimpleBinaryClassifier, signalsize)
+    #test_model(SimpleBinaryClassifier, signalsize)
     print()
     test_model(Feature2LBinaryClassifier, signalsize, signal_to_wavelet_features)

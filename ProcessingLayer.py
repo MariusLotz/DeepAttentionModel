@@ -39,13 +39,13 @@ class ProcessingLayer(nn.Module):
         self.depth = len(feature_list)
 
         # Initialize attention layer for the first feature
-        self.Attention_layers.append(MultiheadAttentionLayer(feature_list[0].size(0), 1))
+        self.Attention_layers.append(MultiheadAttentionLayer(1,1,1,1,1))
 
         # Add linear and attention layers for subsequent features (if depth > 1)
         if self.depth > 1:
             for i in range(1, self.depth):
                 self.Linear_layers.append(nn.Linear(feature_list[i-1].size(0), feature_list[i].size(0)))
-                self.Attention_layers.append(MultiheadAttentionLayer(feature_list[i].size(0), 1))
+                self.Attention_layers.append(MultiheadAttentionLayer(1,1,1,1,1))
 
     def forward(self, signal):
         """
@@ -69,7 +69,9 @@ class ProcessingLayer(nn.Module):
         x[0] = a[0]
 
         for i in range(1, self.depth):
+            print(i)
             a[i] = self.Attention_layers[i](feature_list[i])
             x[i] = self.Linear_layers[i-1](feature_list[i-1]) + a[i]
+            
 
         return x[self.depth -1]

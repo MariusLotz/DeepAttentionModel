@@ -1,4 +1,3 @@
-import torch
 import torch.nn as nn
 from Attention import attention
 
@@ -21,23 +20,26 @@ class MultiheadAttentionLayer(nn.Module):
         dropout (nn.Dropout): Dropout layer.
     """
 
-    def __init__(self, input_size, num_heads, is_row_vector=True, dropout=0.1, trainable=True):
+    def __init__(self, dim_e, dim_k, dim_v, dim_o, num_heads, bias=False, dropout=0.1, trainable=True):
         super(MultiheadAttentionLayer, self).__init__()
 
-        assert input_size % num_heads == 0, "Input size must be divisible by the number of heads."
+        assert dim_k % num_heads == 0, "Input size must be divisible by the number of heads."
 
-        self.input_size = input_size
+        self.dim_e = dim_e
+        self.dim_k = dim_k
+        self.dim_v = dim_v
+        self.dim_o = dim_o
         self.num_heads = num_heads
-        self.head_size = input_size // num_heads
-        self.modify_for_row_vectors = is_row_vector
+        self.head_size = dim_k // num_heads
+    
 
         # Linear projections for Query, Key, and Value
-        self.W_q = nn.Linear(input_size, input_size, bias=False)
-        self.W_k = nn.Linear(input_size, input_size, bias=False)
-        self.W_v = nn.Linear(input_size, input_size, bias=False)
+        self.W_q = nn.Linear(dim_e, dim_k, bias)
+        self.W_k = nn.Linear(dim_e, dim_k, bias)
+        self.W_v = nn.Linear(dim_e, dim_v, bias)
 
         # Output projection
-        self.W_o = nn.Linear(input_size, input_size, bias=False)
+        self.W_o = nn.Linear(self.dim_v, self.dim_o, bias=False)
         self.dropout = nn.Dropout(p=dropout)
 
         # Set requires_grad based on the trainable parameter
@@ -70,10 +72,10 @@ class MultiheadAttentionLayer(nn.Module):
         v = v.view(v.size(0), -1, self.num_heads, self.head_size).transpose(1, 2)
 
         # Scaled Dot-Product Attention
-        attention_based_v = attention(q, k, v, self.modify_for_row_vectors)
+        attention_based_v = attention(q, k, v)
 
         # Concatenate and project back to the original size
-        attention_based_v = attention_based_v.transpose(1, 2).contiguous().view(x.size(0), -1, self.input_size)
+        attention_based_v = attention_based_v.transpose(1, 2).contiguous().view(x.size(0), -1, self.dim_v)
         output = self.W_o(attention_based_v)
 
         return output.squeeze(dim=1)
