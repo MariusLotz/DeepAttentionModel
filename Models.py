@@ -4,35 +4,18 @@ from Signal_to_Features import signal_to_wavelet_features
 from ProcessingLayer import ProcessingLayer
 from End_Layers import L2BinaryClassifier
 from torchsummary import summary # not working yet
+from Kernel_Layers import RBF_Kernel_Layer
 
 
 class RawSimpleBinaryClassifier(nn.Module):
     """
     SimpleBinaryClassifier is a basic binary classifier using a specified binary classification layer.
-
-    Parameters:
-    - signal_size (int): The size of the input signal.
-
-    Attributes:
-    - layer (L2BinaryClassifier): Binary classification layer.
-
     """
     def __init__(self, signal_size):
         super(RawSimpleBinaryClassifier, self).__init__()
         self.layer = L2BinaryClassifier(signal_size, signal_size)
 
     def forward(self, signal):
-        """
-        Forward pass of the SimpleBinaryClassifier.
-
-        Parameters:
-        - signal (torch.Tensor): Input signal.
-
-        Returns:
-        - torch.Tensor: Output of the binary classification layer.
-
-        """
-        # Apply ProcessingLayer to the features obtained from WaveletTransformLayer
         out = self.layer(signal)
         return out
     
@@ -40,32 +23,13 @@ class RawSimpleBinaryClassifier(nn.Module):
 class SimpleBinaryClassifier(nn.Module):
     """
     SimpleBinaryClassifier is a basic binary classifier using a specified binary classification layer.
-
-    Parameters:
-    - signal_size (int): The size of the input signal.
-
-    Attributes:
-    - layer (L2BinaryClassifier): Binary classification layer.
-
     """
     def __init__(self, signal_size):
         super(SimpleBinaryClassifier, self).__init__()
         self.layer = L2BinaryClassifier(signal_size, signal_size)
 
     def forward(self, signal):
-        """
-        Forward pass of the SimpleBinaryClassifier.
-
-        Parameters:
-        - signal (torch.Tensor): Input signal.
-
-        Returns:
-        - torch.Tensor: Output of the binary classification layer.
-
-        """
-        # Apply ProcessingLayer to the features obtained from WaveletTransformLayer
         wave_coeff = signal_to_wavelet_features(signal, squeeze=True)
-        print(wave_coeff)
         out = self.layer(wave_coeff)
         return out
 
@@ -73,17 +37,6 @@ class SimpleBinaryClassifier(nn.Module):
 class Feature2LBinaryClassifier(nn.Module):
     """
     Feature2LBinaryClassifier is a binary classifier that first applies a processing layer to the input signal's features.
-
-    Parameters:
-    - signal_size (int): The size of the input signal.
-    - feature_function (callable): Function to extract features from the input signal.
-
-    Attributes:
-    - signal_size (int): The size of the input signal.
-    - feature_function (callable): Function to extract features from the input signal.
-    - processing_layer (ProcessingLayer): Processing layer applied to input features.
-    - last_layer (L2BinaryClassifier): Binary classification layer.
-
     """
     def __init__(self, signal_size, feature_function):
         super(Feature2LBinaryClassifier, self).__init__()
@@ -93,19 +46,39 @@ class Feature2LBinaryClassifier(nn.Module):
         self.last_layer = L2BinaryClassifier(signal_size, signal_size)
 
     def forward(self, signal):
-        """
-        Forward pass of the Feature2LBinaryClassifier.
-
-        Parameters:
-        - signal (torch.Tensor): Input signal.
-
-        Returns:
-        - torch.Tensor: Output of the binary classification layer.
-
-        """
-        # Apply ProcessingLayer to the features obtained from WaveletTransformLayer
         processing_result = self.processing_layer(signal)
         return self.last_layer(processing_result.squeeze())
+
+
+
+class Kernel_Layer_Classifier(nn.Module):
+    """
+    Using Kernel trick instead of Attention
+    """
+    def __init__(self, signal_size, feature_function, alpha=0.25):
+        super(Kernel_Layer_Classifier, self).__init__()
+        self.feature_function = feature_function
+        test_signal = torch.rand(signal_size)
+        self.feature_size = self.feature_function(test_signal, wavelet='db1', squeeze=True).size(-1)
+        self.K1 = RBF_Kernel_Layer(self.feature_size)
+        self.L1 = nn.Linear(self.feature_size, self.feature_size, True)
+        self.K2 = RBF_Kernel_Layer(self.feature_size)
+        #self.L2 = nn.Linear(self.feature_size, self.feature_size, True)
+        self.alpha = alpha
+
+        self.LastLayer = L2BinaryClassifier(self.feature_size, self.feature_size)
+
+    def forward(self, signal):
+        coeffs = self.feature_function(signal, wavelet='db1', squeeze=True)
+        x = self.alpha * coeffs + (1-self.alpha)* self.K1(coeffs)
+        x = torch.relu(x)
+        x = self.alpha * x + (1-self.alpha)*self.L1(x)
+        x = torch.relu(x)
+        x = self.alpha * x + (1-self.alpha)*self.K2(x)
+        x = torch.relu(x)
+        y = self.LastLayer(x)
+
+        return y
 
 
 def test_model(Model, *args):
@@ -133,4 +106,4 @@ if __name__=="__main__":
     signalsize = 8
     #test_model(SimpleBinaryClassifier, signalsize)
     #print()
-    test_model(Feature2LBinaryClassifier, signalsize, signal_to_wavelet_features)
+    test_model(Kernel_Layer_Classifier, signalsize, signal_to_wavelet_features)

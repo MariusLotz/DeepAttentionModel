@@ -51,6 +51,11 @@ class MultiheadAttentionLayer(nn.Module):
         nn.init.xavier_uniform_(self.W_k.weight)
         nn.init.xavier_uniform_(self.W_v.weight)
         nn.init.xavier_uniform_(self.W_o.weight)
+        #nn.init.normal()
+        #small_bias_value = 1e-5  # You can adjust this value based on your preference
+        #self.W_q.bias.data.fill_(small_bias_value)
+        #self.W_q.bias.data.fill_(small_bias_value)
+        #self.W_q.bias.data.fill_(small_bias_value)
 
 
     def forward(self, x):
@@ -69,6 +74,7 @@ class MultiheadAttentionLayer(nn.Module):
         # Split into multiple heads
         q = q.view(q.size(0), -1, self.num_heads, self.head_size).transpose(1, 2)
         k = k.view(k.size(0), -1, self.num_heads, self.head_size).transpose(1, 2)
+        #print(v.size())
         v = v.view(v.size(0), -1, self.num_heads, self.head_size).transpose(1, 2)
 
         # Scaled Dot-Product Attention
@@ -77,5 +83,6 @@ class MultiheadAttentionLayer(nn.Module):
         # Concatenate and project back to the original size
         attention_based_v = attention_based_v.transpose(1, 2).contiguous().view(x.size(0), -1, self.dim_v)
         output = self.W_o(attention_based_v)
+        #output = attention_based_v
 
         return output.squeeze(dim=1)

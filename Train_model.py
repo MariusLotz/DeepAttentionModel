@@ -2,11 +2,12 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader, TensorDataset
-from Models import Feature2LBinaryClassifier, SimpleBinaryClassifier, RawSimpleBinaryClassifier
+from Models import Feature2LBinaryClassifier, SimpleBinaryClassifier, RawSimpleBinaryClassifier, Kernel_Layer_Classifier
 from datetime import datetime
 from Signal_to_Features import signal_to_wavelet_features
 from Helper_Functions import load_from_pickle
-from Example_Problems.FordA import FordA_preprocessing
+from Example_Problems.FordA import FordA_preprocessing#
+
 
 
 def preprocess_data(file_dest):
@@ -136,8 +137,25 @@ def train_Feature2LBinaryClassifier():
     # Create and save model pretrained and posttrained
     train_model_with_params(Feature2LBinaryClassifier, signalsize, feature_function, losscriterion=nn.BCELoss, 
                             optimizer=optim.Adam, batchsize=512, num_epochs=100, inputs=inputs, outputs=labels)
+    
+
+def train_Kernel_Layer_Classifier():
+    """
+    Train the Kernel_Layer_Classifier model with predefined parameters.
+    """
+    feature_function = signal_to_wavelet_features
+    # Load training data:
+    labels, inputs = FordA_preprocessing()
+    signalsize = inputs.size(1)
+
+    # Create and save model pretrained and posttrained
+    train_model_with_params(Kernel_Layer_Classifier, signalsize, feature_function, losscriterion=nn.BCELoss, 
+                            optimizer=optim.Adam, batchsize=512, num_epochs=100, inputs=inputs, outputs=labels)
+    
+
 
 if __name__ == "__main__":
     #train_RawSimpleBinaryClassifier()
     #train_SimpleBinaryClassifier()
-    train_Feature2LBinaryClassifier()
+    #train_Feature2LBinaryClassifier()
+    train_Kernel_Layer_Classifier()
