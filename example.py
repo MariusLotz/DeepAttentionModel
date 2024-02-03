@@ -5,6 +5,7 @@ import torch.nn as nn
 def create_linear_layer():
     input_size = 4
     W_q = nn.Linear(input_size, input_size, bias=True)
+    w_q.weight
     nn.init.normal_(W_q.weight, mean=0, std=1)
     return W_q
 

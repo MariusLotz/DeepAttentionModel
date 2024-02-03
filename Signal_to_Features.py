@@ -17,7 +17,7 @@ def signal_to_wavelet_features(signal, wavelet='db1', squeeze=False):
     tensor_list = [torch.tensor(coeff).unsqueeze(-1) for coeff in coeffs]
     
     if squeeze:
-        return torch.cat(tensor_list, -2)
+        return torch.cat(tensor_list, -2).squeeze()
     else:
         return tensor_list
 
@@ -26,7 +26,7 @@ def example_signal_to_wavelet_features():
     """Example usage"""
 
     # Create a sample signal
-    sample_signal = torch.tensor([1.0, 2.0, 3.0, 4.0, 5.0, 6.0])
+    sample_signal = torch.tensor([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0])
 
     # Call the function
     wavelet_features = signal_to_wavelet_features(sample_signal, squeeze=True)

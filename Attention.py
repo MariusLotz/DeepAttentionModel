@@ -15,7 +15,7 @@ def attention_matrix(q, k, dropout=None, mask=None):
         torch.Tensor: Attention matrix.
     """
     d_k = q.size(-1)
-    print(d_k)
+    #print(d_k)
     scores = torch.matmul(q, k.transpose(-2, -1)) / math.sqrt(d_k)
 
     # Apply attention mask if provided
@@ -46,8 +46,8 @@ def attention(q, k, v, dropout=None, mask=None):
         torch.Tensor: Attention-weighted sum of values.
     """
     att_matrix = attention_matrix(q, k, dropout=dropout, mask=mask)
-    print(att_matrix)
-    print(v)
+    #print(att_matrix)
+    #print(v)
     weighted_sum = torch.matmul(att_matrix, v)
-    print(weighted_sum)
+    #print(weighted_sum)
     return weighted_sum

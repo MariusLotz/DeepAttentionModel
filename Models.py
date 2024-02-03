@@ -65,6 +65,7 @@ class SimpleBinaryClassifier(nn.Module):
         """
         # Apply ProcessingLayer to the features obtained from WaveletTransformLayer
         wave_coeff = signal_to_wavelet_features(signal, squeeze=True)
+        print(wave_coeff)
         out = self.layer(wave_coeff)
         return out
 
@@ -104,7 +105,7 @@ class Feature2LBinaryClassifier(nn.Module):
         """
         # Apply ProcessingLayer to the features obtained from WaveletTransformLayer
         processing_result = self.processing_layer(signal)
-        return self.last_layer(processing_result)
+        return self.last_layer(processing_result.squeeze())
 
 
 def test_model(Model, *args):
@@ -119,17 +120,17 @@ def test_model(Model, *args):
     model = Model(*args)
     #summary(model, signalsize, 2)
     # Create a test batch with 2 elements
-    x1 = torch.tensor([1.0, 2.0, 3.0, 4.0, 1.33, 2.44, 7], dtype=torch.float32)
-    x2 = torch.tensor([5.0, 6.0, 7.0, 8.0, 1.45, 2.89, 8], dtype=torch.float32)
+    x1 = torch.tensor([1.0, 2.0, 3.0, 4.0, 1.33, 2.44, 7,9], dtype=torch.float32)
+    x2 = torch.tensor([5.0, 6.0, 7.0, 8.0, 1.45, 2.89, 8,9], dtype=torch.float32)
     # Combine the elements into a batch
     batch = torch.stack([x1, x2])
     #print(batch)
     output = model(batch)
-    #print(output)
+    print(output)
 
 
 if __name__=="__main__":
-    signalsize = 7
+    signalsize = 8
     #test_model(SimpleBinaryClassifier, signalsize)
-    print()
+    #print()
     test_model(Feature2LBinaryClassifier, signalsize, signal_to_wavelet_features)

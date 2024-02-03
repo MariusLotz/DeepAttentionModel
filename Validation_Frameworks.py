@@ -125,7 +125,7 @@ def confusion_matrix(model, test_inputs, test_labels):
 
 def Test_framework():
     labels, inputs = FordA_preprocessing(True)
-    models = {'Feature2LBinaryClassifier': torch.load('Models/Feature2LBinaryClassifier_2024-01-30_trained'),
+    models = {'Feature2LBinaryClassifier': torch.load('Models/Feature2LBinaryClassifier_2024-02-03_trained'),
             'SimpleBinaryClassifier': torch.load('Models/SimpleBinaryClassifier_2024-01-30_trained'),
             'RawSimpleBinaryClassifier':torch.load('Models/RawSimpleBinaryClassifier_2024-02-01_trained')}
 

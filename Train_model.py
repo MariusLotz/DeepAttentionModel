@@ -138,6 +138,6 @@ def train_Feature2LBinaryClassifier():
                             optimizer=optim.Adam, batchsize=512, num_epochs=100, inputs=inputs, outputs=labels)
 
 if __name__ == "__main__":
-    train_RawSimpleBinaryClassifier()
+    #train_RawSimpleBinaryClassifier()
     #train_SimpleBinaryClassifier()
-    #train_Feature2LBinaryClassifier()
+    train_Feature2LBinaryClassifier()

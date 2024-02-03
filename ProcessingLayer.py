@@ -44,7 +44,7 @@ class ProcessingLayer(nn.Module):
         # Add linear and attention layers for subsequent features (if depth > 1)
         if self.depth > 1:
             for i in range(1, self.depth):
-                self.Linear_layers.append(nn.Linear(feature_list[i-1].size(0), feature_list[i].size(0)))
+                self.Linear_layers.append(nn.Linear(1,1))
                 self.Attention_layers.append(MultiheadAttentionLayer(1,1,1,1,1))
 
     def forward(self, signal):
@@ -69,9 +69,26 @@ class ProcessingLayer(nn.Module):
         x[0] = a[0]
 
         for i in range(1, self.depth):
-            print(i)
             a[i] = self.Attention_layers[i](feature_list[i])
-            x[i] = self.Linear_layers[i-1](feature_list[i-1]) + a[i]
+            #print('hello')
+            #print(i)
+            #print(feature_list[i-1])
+            #print()
+            #print(self.Linear_layers[i-1].weight)
+            #print()
+            #print(self.Linear_layers[i-1](feature_list[i-1]).expand())
+           
+            # Determine the size difference
+            size_diff = a[i].size(-2) - x[i-1].size(-2) 
+            #print(size_diff)
+
+            # Upsample the smaller tensor (tensor1) with zeros
+            upsampled_x_minus = torch.cat((x[i-1], torch.zeros(a[i].size(0), size_diff, 1)), dim=-2)
+            #print(upsampled_x_minus)
+
+            x[i] = upsampled_x_minus + a[i]
+         
+          
             
 
         return x[self.depth -1]
