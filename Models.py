@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 from Signal_to_Features import signal_to_wavelet_features
-from ProcessingLayer import ProcessingLayer
+from ProcessingLayer import ProcessingLayer, ReduceProcessingLayer
 from End_Layers import L2BinaryClassifier
 from torchsummary import summary # not working yet
 from Kernel_Layers import RBF_Kernel_Layer
@@ -50,12 +50,29 @@ class Feature2LBinaryClassifier(nn.Module):
         return self.last_layer(processing_result.squeeze())
 
 
+class ReduceFeature2LBinaryClassifier(nn.Module):
+    """
+    RedcueFeature2LBinaryClassifier is a binary classifier that first applies a processing layer to the input signal's features.
+    """
+    def __init__(self, signal_size, pipeline_size, feature_function):
+        super(ReduceFeature2LBinaryClassifier, self).__init__()
+        self.pipeline_size = pipeline_size
+        self.feature_function = feature_function
+        self.processing_layer = ReduceProcessingLayer(signal_size, pipeline_size, feature_function)
+        self.last_layer = L2BinaryClassifier(pipeline_size, pipeline_size)
+
+    def forward(self, signal):
+        processing_result = self.processing_layer(signal)
+        out = self.last_layer(processing_result)
+        return out
+
+
 
 class Kernel_Layer_Classifier(nn.Module):
     """
     Using Kernel trick instead of Attention
     """
-    def __init__(self, signal_size, feature_function, alpha=0.25):
+    def __init__(self, signal_size, feature_function, alpha=0.1):
         super(Kernel_Layer_Classifier, self).__init__()
         self.feature_function = feature_function
         test_signal = torch.rand(signal_size)
@@ -71,11 +88,11 @@ class Kernel_Layer_Classifier(nn.Module):
     def forward(self, signal):
         coeffs = self.feature_function(signal, wavelet='db1', squeeze=True)
         x = self.alpha * coeffs + (1-self.alpha)* self.K1(coeffs)
-        x = torch.relu(x)
+        #x = torch.relu(x)
         x = self.alpha * x + (1-self.alpha)*self.L1(x)
         x = torch.relu(x)
         x = self.alpha * x + (1-self.alpha)*self.K2(x)
-        x = torch.relu(x)
+        #x = torch.relu(x)
         y = self.LastLayer(x)
 
         return y
@@ -84,26 +101,20 @@ class Kernel_Layer_Classifier(nn.Module):
 def test_model(Model, *args):
     """
     Test the specified model using a sample batch.
-
-    Parameters:
-    - Model (nn.Module): The model class to be tested.
-    - *args: Variable number of arguments to initialize the model.
-
     """
     model = Model(*args)
-    #summary(model, signalsize, 2)
-    # Create a test batch with 2 elements
-    x1 = torch.tensor([1.0, 2.0, 3.0, 4.0, 1.33, 2.44, 7,9], dtype=torch.float32)
-    x2 = torch.tensor([5.0, 6.0, 7.0, 8.0, 1.45, 2.89, 8,9], dtype=torch.float32)
-    # Combine the elements into a batch
-    batch = torch.stack([x1, x2])
-    #print(batch)
+
+    s1 = torch.tensor([1.0, 2.0, 3.0, 4.0, 1.33, 2.44, 7,9], dtype=torch.float32)
+    s2 = torch.tensor([5.0, 6.0, 7.0, 8.0, 1.45, 2.89, 8,9], dtype=torch.float32)
+    batch = torch.stack([s1, s2])
+ 
     output = model(batch)
     print(output)
 
 
 if __name__=="__main__":
     signalsize = 8
+    pipeline_size = 4
     #test_model(SimpleBinaryClassifier, signalsize)
     #print()
-    test_model(Kernel_Layer_Classifier, signalsize, signal_to_wavelet_features)
+    test_model(ReduceFeature2LBinaryClassifier, signalsize, pipeline_size, signal_to_wavelet_features)

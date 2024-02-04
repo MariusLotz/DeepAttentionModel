@@ -1,21 +1,11 @@
 import torch
 import torch.nn as nn
 from MultiheadAttentionLayer import MultiheadAttentionLayer
+from SingleHeadAttentionLayer import SingleAttentionLikeLayer
 
 class ProcessingLayer(nn.Module):
     """
     ProcessingLayer module applies a sequence of attention and linear transformations to a signal.
-
-    Args:
-        signal_size (int): The size of the input signal.
-        signal_to_feature_func (callable): A function that transforms the input signal into a list of features.
-        reverse_features (bool, optional): Whether to reverse the order of features. Default is True.
-
-    Attributes:
-        Linear_layers (nn.ModuleList): List of linear transformation layers.
-        Attention_layers (nn.ModuleList): List of multihead attention layers.
-        trafo (callable): The function used for transforming the input signal to features.
-        depth (int): The number of transformation layers.
     """
 
     def __init__(self, signal_size, signal_to_feature_func, reverse_features=False):
@@ -24,7 +14,6 @@ class ProcessingLayer(nn.Module):
         # Generate a test signal and transform it to features
         test_signal = torch.rand(signal_size)
         feature_list = signal_to_feature_func(test_signal)
-        #print(feature_list)
 
         # Reverse features if specified
         if reverse_features:
@@ -50,13 +39,8 @@ class ProcessingLayer(nn.Module):
     def forward(self, signal):
         """
         Forward pass of the ProcessingLayer.
-
-        Args:
-            signal (torch.Tensor): The input signal.
-
-        Returns:
-            torch.Tensor: The output features after applying attention and linear transformations.
         """
+
         # Transform the input signal into a list of features
         feature_list = self.trafo(signal)
 
@@ -70,25 +54,61 @@ class ProcessingLayer(nn.Module):
 
         for i in range(1, self.depth):
             a[i] = self.Attention_layers[i](feature_list[i])
-            #print('hello')
-            #print(i)
-            #print(feature_list[i-1])
-            #print()
-            #print(self.Linear_layers[i-1].weight)
-            #print()
-            #print(self.Linear_layers[i-1](feature_list[i-1]).expand())
-           
+
             # Determine the size difference
             size_diff = a[i].size(-2) - x[i-1].size(-2) 
-            #print(size_diff)
 
             # Upsample the smaller tensor (tensor1) with zeros
             upsampled_x_minus = torch.cat((x[i-1], torch.zeros(a[i].size(0), size_diff, 1)), dim=-2)
-            #print(upsampled_x_minus)
+
 
             x[i] = upsampled_x_minus + a[i]
-         
-          
-            
-
+        
         return x[self.depth -1]
+
+
+class ReduceProcessingLayer(nn.Module):
+    """
+    ProcessingLayer module applies a sequence of attention and linear transformations to a signal.
+    """
+
+    def __init__(self, signal_size, pipeline_size, signal_to_feature_func, bias=False):
+        super(ReduceProcessingLayer, self).__init__()
+        self.pipeline_size = pipeline_size
+        self.trafo = signal_to_feature_func
+        test_signal = torch.rand(signal_size)
+        self.feature_list = signal_to_feature_func(test_signal)
+        self.depth = len(self.feature_list)
+
+        # Initialize lists for linear and attention layers
+        self.Linear_att_layers = nn.ModuleList()
+        self.Linear_stream_layers = nn.ModuleList()
+        self.Linear_trafo_layers = nn.ModuleList()
+        self.Attention_like_layers = nn.ModuleList()
+
+        for i in range(0, self.depth):
+            self.Linear_att_layers.append(nn.Linear(pipeline_size, pipeline_size, bias))
+            self.Linear_stream_layers.append(nn.Linear(pipeline_size, pipeline_size, bias))
+            self.Linear_trafo_layers.append(nn.Linear(pipeline_size, pipeline_size, bias))
+            self.Attention_like_layers.append(SingleAttentionLikeLayer(self.feature_list[i].size(-1), pipeline_size, bias))
+
+    def forward(self, signal):
+        feature_list = self.trafo(signal)
+        i=0
+    
+        A = [torch.zeros(self.pipeline_size) for i_ in range(self.depth)]
+        X = [torch.zeros(self.pipeline_size) for i_ in range(self.depth)]
+
+        # Apply attention and linear transformations to each feature
+        A[0] = self.Attention_like_layers[0](feature_list[0])
+        X[0] = self.Linear_att_layers[0](A[0])
+        
+      
+        for i in range(1, self.depth):
+            x = self.Linear_trafo_layers[i](X[i-1])
+            x = torch.sigmoid(x)
+            A[i] = self.Attention_like_layers[i](feature_list[i])
+            X[i] = self.Linear_att_layers[i](A[i-1]) + self.Linear_stream_layers[i](x)
+            #X[i] = A[i] + x
+       
+        return X[self.depth -1]

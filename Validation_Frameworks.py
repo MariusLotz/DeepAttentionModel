@@ -127,7 +127,10 @@ def Test_framework():
     labels, inputs = FordA_preprocessing(True)
     models = {'Feature2LBinaryClassifier': torch.load('Models/Feature2LBinaryClassifier_2024-02-03_trained'),
             'SimpleBinaryClassifier': torch.load('Models/SimpleBinaryClassifier_2024-01-30_trained'),
-            'RawSimpleBinaryClassifier':torch.load('Models/RawSimpleBinaryClassifier_2024-02-01_trained')}
+            'RawSimpleBinaryClassifier':torch.load('Models/RawSimpleBinaryClassifier_2024-02-01_trained'),
+            'Kernel_Layer_Classifier':torch.load('Models/Kernel_Layer_Classifier_2024-02-03_trained'),
+            #'Feature2LBinaryClassifier_old':torch.load('Models/Feature2LBinaryClassifier_2024-01-30_trained')
+            }
 
     model_name_list, metric_list = compare_models(models, inputs, labels)
     print_compared_models(model_name_list, metric_list)

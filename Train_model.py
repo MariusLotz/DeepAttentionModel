@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader, TensorDataset
-from Models import Feature2LBinaryClassifier, SimpleBinaryClassifier, RawSimpleBinaryClassifier, Kernel_Layer_Classifier
+from Models import Feature2LBinaryClassifier, SimpleBinaryClassifier, RawSimpleBinaryClassifier, Kernel_Layer_Classifier, ReduceFeature2LBinaryClassifier
 from datetime import datetime
 from Signal_to_Features import signal_to_wavelet_features
 from Helper_Functions import load_from_pickle
@@ -153,9 +153,24 @@ def train_Kernel_Layer_Classifier():
                             optimizer=optim.Adam, batchsize=512, num_epochs=100, inputs=inputs, outputs=labels)
     
 
+def train_ReduceFeature2LBinaryClassifier():
+    """
+    Train the SimpleBinaryClassifier model with predefined parameters.
+    """
+    feature_function = signal_to_wavelet_features
+    # Load training data:
+    labels, inputs = FordA_preprocessing()
+    signalsize = inputs.size(1)
+    pipeline_size=32
+
+    # Create and save model pretrained and posttrained
+    train_model_with_params(ReduceFeature2LBinaryClassifier, signalsize, pipeline_size, feature_function, losscriterion=nn.BCELoss, 
+                            optimizer=optim.Adam, batchsize=512, num_epochs=1000, inputs=inputs, outputs=labels)
+    
+
 
 if __name__ == "__main__":
     #train_RawSimpleBinaryClassifier()
     #train_SimpleBinaryClassifier()
     #train_Feature2LBinaryClassifier()
-    train_Kernel_Layer_Classifier()
+    train_ReduceFeature2LBinaryClassifier()

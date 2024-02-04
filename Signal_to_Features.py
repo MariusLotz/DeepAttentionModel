@@ -14,12 +14,14 @@ def signal_to_wavelet_features(signal, wavelet='db1', squeeze=False):
     """
     # Perform discrete wavelet transform
     coeffs = pywt.wavedec(signal.numpy(), wavelet)
-    tensor_list = [torch.tensor(coeff).unsqueeze(-1) for coeff in coeffs]
+    tensor_list = [torch.tensor(coeff) for coeff in coeffs]
+
     
     if squeeze:
         return torch.cat(tensor_list, -2).squeeze()
     else:
         return tensor_list
+    
 
 
 def example_signal_to_wavelet_features():
