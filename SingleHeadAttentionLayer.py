@@ -67,7 +67,61 @@ class SingleAttentionLikeLayer(nn.Module):
         attention_based_v = attention(q, k, v)
 
         return attention_based_v 
-    
+
+
+class EncoderLayer(nn.Module):
+    """Encoder besteht aus dem Attention Layer und dem FFN, sowie einem Dropout Layer beim Lernen"""
+    def __init__(self, d_model, att_layer, feed_forward, dropout):
+        super(EncoderLayer, self).__init__()
+        self.AttentionLayer = att_layer
+        self.feed_forward = feed_forward
+        self.sublayer = torch.clones(SublayerConnection(d_model, dropout), 2)
+        self.size = d_model
+
+    def forward(self, x, mask):
+        """Forwardpass des Encoder Layers"""
+        x = self.sublayer[0](x, lambda x: self.self_attn(x, x, x, mask))
+        return self.sublayer[1](x, self.feed_forward)
+
+
+class PositionwiseFeedForward(nn.Module):
+    """Implementierung des Feed-Forward NN"""
+    def __init__(self, d_model, dropout=0.1):
+        super(PositionwiseFeedForward, self).__init__()
+        d_ff = d_model
+        self.w_1 = nn.Linear(d_model, d_ff)
+        self.w_2 = nn.Linear(d_ff, d_model)
+        self.dropout = nn.Dropout(dropout)
+
+    def forward(self, x):
+        """Forwardpass des NN"""
+        return self.w_2(self.dropout(self.w_1(x).relu())) # wieder mit Dropout
+
+class LayerNorm(nn.Module):
+    """Implementierung der Layer Normalisierung"""
+    def __init__(self, features, eps=1e-6):
+        super(LayerNorm, self).__init__()
+        self.a_2 = nn.Parameter(torch.ones(features))
+        self.b_2 = nn.Parameter(torch.zeros(features))
+        self.eps = eps
+
+    def forward(self, x):
+        """Forwardpass der LayerNorm Schicht"""
+        mean = x.mean(-1, keepdim=True)
+        std = x.std(-1, keepdim=True)
+        return self.a_2 * (x - mean) / (std + self.eps) + self.b_2
+
+
+class SublayerConnection(nn.Module):
+    """Implementierung der Skip-Connection Verbindung"""
+    def __init__(self, size, dropout):
+        super(SublayerConnection, self).__init__()
+        self.norm = LayerNorm(size)
+        self.dropout = nn.Dropout(dropout)
+
+    def forward(self, x, sublayer):
+        """Forward Pass der Skip-Connection"""
+        return x + self.dropout(sublayer(self.norm(x))) # wieder mit Dropout-Schicht
 
 
 
