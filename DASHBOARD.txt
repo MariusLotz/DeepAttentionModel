@@ -107,3 +107,42 @@ Epoch [98/100], Loss: 0.0006
 Epoch [99/100], Loss: 0.0009
 Epoch [100/100], Loss: 0.0005
 
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+
+class CustomDynamicLinearLayer(nn.Module):
+    def __init__(self):
+        super(CustomDynamicLinearLayer, self).__init__()
+
+        # Initialize parameters as None, to be set during the first forward pass
+        self.weight = None
+        self.bias = None
+
+    def initialize_layer(self, input_size):
+        # Use input-dependent initialization
+        self.weight = nn.Parameter(torch.randn(self.output_size, input_size))
+        self.bias = nn.Parameter(torch.zeros(self.output_size))
+
+    def forward(self, x):
+        # If parameters are not initialized, set them based on the first input
+        if self.weight is None or self.bias is None:
+            self.output_size = x.size(1)  # Assuming input size is the second dimension
+            self.initialize_layer(x.size(1))
+
+        return F.linear(x, self.weight, self.bias)
+
+# Example usage:
+# Instantiate the custom dynamic linear layer
+custom_dynamic_linear_layer = CustomDynamicLinearLayer()
+
+# Create input tensor with varying input size
+input_tensor1 = torch.randn(3, 5)  # Input size: 5
+input_tensor2 = torch.randn(3, 8)  # Input size: 8
+
+# Apply the custom dynamic linear layer
+output1 = custom_dynamic_linear_layer(input_tensor1)
+output2 = custom_dynamic_linear_layer(input_tensor2)
+
+print("Custom Dynamic Linear Layer Output 1:", output1)
+print("Custom Dynamic Linear Layer Output 2:", output2)

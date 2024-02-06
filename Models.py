@@ -1,11 +1,11 @@
 import torch
 import torch.nn as nn
-from Signal_to_Features import signal_to_wavelet_features
-from ProcessingLayer import ProcessingLayer, ReduceProcessingLayer
+from Signal_to_Features import signal_to_wavelet_features, WaveletMatrixLayer
+from ProcessingLayer import ProcessingLayer, ReduceProcessingLayer, Signal_to_x
 from End_Layers import L2BinaryClassifier
 from torchsummary import summary # not working yet
 from Kernel_Layers import RBF_Kernel_Layer
-
+from SingleHeadAttentionLayer import Encoder
 
 class RawSimpleBinaryClassifier(nn.Module):
     """
@@ -19,7 +19,6 @@ class RawSimpleBinaryClassifier(nn.Module):
         out = self.layer(signal)
         return out
     
-
 class SimpleBinaryClassifier(nn.Module):
     """
     SimpleBinaryClassifier is a basic binary classifier using a specified binary classification layer.
@@ -32,7 +31,6 @@ class SimpleBinaryClassifier(nn.Module):
         wave_coeff = signal_to_wavelet_features(signal, squeeze=True)
         out = self.layer(wave_coeff)
         return out
-
 
 class Feature2LBinaryClassifier(nn.Module):
     """
@@ -48,6 +46,29 @@ class Feature2LBinaryClassifier(nn.Module):
     def forward(self, signal):
         processing_result = self.processing_layer(signal)
         return self.last_layer(processing_result.squeeze())
+
+class N_Multirow_Attention(nn.Module):
+    """
+    N_Multirow_Attention( is a binary classifier that first applies a processing layer to the input signal's features.
+    """
+    def __init__(self, signal_size, feature_function, N=1):
+        super(N_Multirow_Attention, self).__init__()
+        self.N = N
+        # Generate a test signal and transform it to features
+        test_signal = torch.rand(signal_size)
+        feature_list = feature_function(test_signal)
+        self.feature_count = len(feature_list)
+        self.feature_size_list = [len(feature_list[i]) for i in range(self.feature_count)]
+
+        self.Signal_to_x = WaveletMatrixLayer()
+        self.Attention_Encoder = Encoder(N, self.feature_size_list[-1])
+        self.last_layer = L2BinaryClassifier(signal_size, signal_size)
+
+    def forward(self, signal):
+        x = self.Signal_to_x(signal)
+        x = self.Attention_Encoder(x)
+        x = self.last_layer(x)
+        return x
 
 
 class ReduceFeature2LBinaryClassifier(nn.Module):
@@ -115,6 +136,5 @@ def test_model(Model, *args):
 if __name__=="__main__":
     signalsize = 8
     pipeline_size = 4
-    #test_model(SimpleBinaryClassifier, signalsize)
-    #print()
-    test_model(ReduceFeature2LBinaryClassifier, signalsize, pipeline_size, signal_to_wavelet_features)
+    #test_model(ReduceFeature2LBinaryClassifier, signalsize, pipeline_size, signal_to_wavelet_features)
+    test_model(N_Multirow_Attention, signalsize, signal_to_wavelet_features)

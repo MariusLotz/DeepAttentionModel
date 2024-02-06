@@ -112,3 +112,31 @@ class ReduceProcessingLayer(nn.Module):
             #X[i] = A[i] + x
        
         return X[self.depth -1]
+
+
+class Signal_to_x(nn.Module):
+    """
+    ProcessingLayer module applies a sequence of attention and linear transformations to a signal.
+    """
+
+    def __init__(self, feature_count, feature_size_list, feature_function):
+        super(Signal_to_x, self).__init__()
+        self.feature_count = feature_count
+        self.feature_size_list = feature_size_list
+        self.trafo = feature_function
+
+    def forward(self, signal):
+        feature_list = self.trafo(signal)
+        
+
+        x_tensor = torch.empty(self.feature_count, self.feature_size_list[-1])
+        #print(x_tensor.size())
+        print(feature_list.size())
+        #print([len(feature) for feature in feature_list])
+
+        for i in range(self.feature_count):
+            for j in range(self.feature_size_list[-1]):
+                x_tensor[i,j] = feature_list[i][j]
+            
+        return x_tensor
+
