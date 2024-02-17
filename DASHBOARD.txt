@@ -6,6 +6,8 @@ Feature2LBinaryClassifier: 0.7727272727272727
 SimpleBinaryClassifier: 0.8340909090909091
 RawSimpleBinaryClassifier: 0.8242424242424242
 
+N_Multirow_Attention: 0.7507575757575757
+
 Epoch [1/100], Loss: 0.6946
 Epoch [2/100], Loss: 0.5546
 Epoch [3/100], Loss: 0.7508

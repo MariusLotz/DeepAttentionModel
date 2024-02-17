@@ -28,10 +28,10 @@ def FordA_dataset_trafo(pandas_dataset):
 
 def FordA_preprocessing(testset=False):
     if not testset:
-        file_path = "Example_Problems/Raw_Data/FordA/FordA_TRAIN.tsv"
+        file_path = "Example_Problems/Real_Data/FordA/FordA_TRAIN.tsv"
 
     else:
-        file_path = "Example_Problems/Raw_Data/FordA/FordA_TEST.tsv"
+        file_path = "Example_Problems/Real_Data/FordA/FordA_TEST.tsv"
     spec_type = "tsv"
     return data_table_to_tensors(file_path, spec_type, FordA_dataset_trafo)
 

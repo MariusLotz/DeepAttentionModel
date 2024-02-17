@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader, TensorDataset
-from Models import Feature2LBinaryClassifier, SimpleBinaryClassifier, RawSimpleBinaryClassifier, Kernel_Layer_Classifier, ReduceFeature2LBinaryClassifier
+from Models import Feature2LBinaryClassifier, SimpleBinaryClassifier,RawSimpleBinaryClassifier, Kernel_Layer_Classifier, ReduceFeature2LBinaryClassifier, N_Multirow_Attention
 from datetime import datetime
 from Signal_to_Features import signal_to_wavelet_features
 from Helper_Functions import load_from_pickle
@@ -166,11 +166,25 @@ def train_ReduceFeature2LBinaryClassifier():
     # Create and save model pretrained and posttrained
     train_model_with_params(ReduceFeature2LBinaryClassifier, signalsize, pipeline_size, feature_function, losscriterion=nn.BCELoss, 
                             optimizer=optim.Adam, batchsize=512, num_epochs=1000, inputs=inputs, outputs=labels)
-    
 
+
+def train_N_Multirow_Attention_Classifier():
+    """
+    Train the N_Multirow_Attention_Classifier model with predefined parameters.
+    """
+    # Load training data:
+    labels, inputs = FordA_preprocessing()
+    signalsize = inputs.size(1)
+    pipeline_size=32
+
+    # Create and save model pretrained and posttrained
+    train_model_with_params(N_Multirow_Attention, signalsize, losscriterion=nn.BCELoss, 
+                            optimizer=optim.Adam, batchsize=256, num_epochs=100, inputs=inputs, outputs=labels)
+    
 
 if __name__ == "__main__":
     #train_RawSimpleBinaryClassifier()
     #train_SimpleBinaryClassifier()
     #train_Feature2LBinaryClassifier()
-    train_ReduceFeature2LBinaryClassifier()
+    #train_ReduceFeature2LBinaryClassifier()
+    train_N_Multirow_Attention_Classifier()

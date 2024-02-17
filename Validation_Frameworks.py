@@ -129,6 +129,7 @@ def Test_framework():
             'SimpleBinaryClassifier': torch.load('Models/SimpleBinaryClassifier_2024-01-30_trained'),
             'RawSimpleBinaryClassifier':torch.load('Models/RawSimpleBinaryClassifier_2024-02-01_trained'),
             'Kernel_Layer_Classifier':torch.load('Models/Kernel_Layer_Classifier_2024-02-03_trained'),
+            'N_Multirow_Attention':torch.load('Models/N_Multirow_Attention_2024-02-12_trained'),
             #'Feature2LBinaryClassifier_old':torch.load('Models/Feature2LBinaryClassifier_2024-01-30_trained')
             }
 
