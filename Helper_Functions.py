@@ -3,8 +3,13 @@ import pickle
 import pandas as pd
 import torch
 
+def standard_binary_classification_trafo(df):
+    class_columns = df.iloc[:, 0]
+    time_series_columns = df.iloc[:, 1:]
+    return class_columns.values, time_series_columns.values
 
-def data_table_to_tensors(file_path, file_type, dataset_trafo):
+
+def data_table_to_tensors(file_path, file_type, dataset_trafo = standard_binary_classification_trafo):
     """
     Read a dataset file into Pandas DataFrame, apply modifications, and convert to PyTorch tensors.
 
@@ -25,10 +30,10 @@ def data_table_to_tensors(file_path, file_type, dataset_trafo):
         raise ValueError("Unsupported file type. Supported types: 'csv', 'tsv'")
 
     # Apply dataset-specific transformations to the DataFrame
-    class_column, time_series_columns = dataset_trafo(df)
+    class_columns, time_series_columns = dataset_trafo(df)
 
     # Convert NumPy arrays to tensors
-    classes_tensor = torch.tensor(class_column, dtype=torch.float) 
+    classes_tensor = torch.tensor(class_columns, dtype=torch.float) 
     time_series_tensor = torch.tensor(time_series_columns, dtype=torch.float)
 
     return classes_tensor, time_series_tensor
