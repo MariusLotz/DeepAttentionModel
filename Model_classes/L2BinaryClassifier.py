@@ -2,7 +2,6 @@ import torch.nn as nn
 import torch
 import torch.nn.init as init
 
-
 class L2BinaryClassifier(nn.Module):
     """
     L2BinaryClassifier is a binary classifier with two hidden layers.
@@ -64,7 +63,6 @@ class L2BinaryClassifier(nn.Module):
         """
         if not self.initialized:
             input_size = x.size(1)
-            print(input_size)
             self.linear_1 = nn.Linear(input_size, self.hidden_size_1)
             self.init_parameters()
             self.initialized = True
