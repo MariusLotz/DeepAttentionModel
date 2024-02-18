@@ -32,6 +32,7 @@ class L2BinaryClassifier(nn.Module):
         self.output_size = output_size
         self.init_method = init_method
 
+        self.input_size = None
         self.linear_1 = None
         self.linear_2 = nn.Linear(hidden_size_1, hidden_size_2)
         self.linear_3 = nn.Linear(hidden_size_2, output_size)
@@ -62,10 +63,16 @@ class L2BinaryClassifier(nn.Module):
             torch.Tensor: Output tensor.
         """
         if not self.initialized:
-            input_size = x.size(1)
+            if self.input_size is None:
+                input_size = max(inp.size(0) for inp in x)
+            else:
+                input_size = self.input_size
             self.linear_1 = nn.Linear(input_size, self.hidden_size_1)
             self.init_parameters()
             self.initialized = True
+        
+        # Pad sequences with zeros
+        x_padded = nn.utils.rnn.pad_sequence(x, batch_first=True, padding_value=0)
 
         x = self.linear_1(x)
         x = torch.tanh(x)
@@ -100,6 +107,25 @@ def test_model():
     print("Input:", input_data)
     print("Output probabilities:", output)
 
+def test_model_with_padding():
+    """
+    Test the L2BinaryClassifier model on batch input data.
+    """
+    # Generate random batch input data
+    batch_size = 2
+    input_data = [torch.randn(torch.randint(1, 6, (1,)), 5) for _ in range(batch_size)]
+
+    model = L2BinaryClassifier(3, 3)
+    
+    # Pass input data through the model
+    with torch.no_grad():
+        output = model(input_data)
+    
+    # Display the output
+    print("Input:")
+    for i, inp in enumerate(input_data):
+        print(f"Sample {i + 1}: {inp}")
+    print("Output probabilities:", output)
 
 if __name__ == '__main__':
-    test_model()
+    test_model_with_padding()
