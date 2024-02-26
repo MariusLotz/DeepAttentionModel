@@ -41,13 +41,18 @@ def train_all(models, dataset_dir='Example_Problems/Real_Data/UCRoutput'):
                     
                     # Check if the file name ends with '_TRAIN.tsv'
                     if file_name.endswith('_TRAIN.csv'):
-                        # Print the file path
-                        dataset_path = os.path.join(folder_path, file_name)
-                        print(f"Starting to train {model_class.__name__} on {file_name}")
-                        time.sleep(3)
-                        train_model_on_dataset(model_class, dataset_path, param_list)
-                        
+                        try:
+                            # Print the file path
+                            dataset_path = os.path.join(folder_path, file_name)
+                            print(f"Starting to train {model_class.__name__} on {file_name}")
+                            time.sleep(3)
+                            train_model_on_dataset(model_class, dataset_path, param_list)
+                        except Exception as e:
+                            print(f" There was a problem training {file_name} on {model_class.__name__}, so it was skipped!")
+                            print(e)
+                            print()
 
+                        
 def train_model_on_dataset(model_class, dataset_path, param, batch_size=512, num_epochs=1000, 
                             criterion=nn.BCELoss(), optimizer=optim.Adam):
     # Load data from dataset_path
