@@ -46,49 +46,29 @@ def compare_models(models, test_inputs, test_labels, metric=accuracy_score):
         metric_list.append(metric_value)
     return model_name_list, metric_list
 
-
-def main():
-    """
-    # Collect all models
-    directory = "Models/L2BinaryClassifier"
-    relative_paths = []
+def get_all_models_in_dir(directory):
     models = []
     for filename in os.listdir(directory):
         relative_path = os.path.join(directory, filename)
         if os.path.isfile(relative_path):
-            relative_paths.append(relative_path)
             model = torch.load(relative_path)
             model.eval()
             models.append(model)
-    """
+    return models
 
-
-   # Directory path
-    directory = "Example_Problems/Real_Data/UCRoutput"
-
-    # Initialize a list to store relative file paths
-    relative_file_paths = []
-
-    # Iterate over each folder in the directory
+def get_all_datasets(directory):
+    datasets = []
     for folder in os.listdir(directory):
-        # Construct the folder path
         folder_path = os.path.join(directory, folder)
-        
-        # Check if the item is a directory
         if os.path.isdir(folder_path):
-            # Iterate over each file in the folder
             for file in os.listdir(folder_path):
-                # Check if the file ends with "_TEST.csv"
                 if file.endswith("_TEST.csv"):
-                    # Construct the relative file path by joining the folder path and the file name
                     rel_file_path = os.path.join(folder_path, file)
-                    relative_file_paths.append(rel_file_path)
+                    classes_tensor, time_series_tensor = data_table_to_tensors(rel_file_path, 'csv')
+                    datasets.append(classes_tensor, time_series_tensor)
+    return datasets
 
-    # Print the list of relative file paths
-    for rel_file_path in relative_file_paths:
-        print(rel_file_path)
-            
-
+def validate_and_compare(directory_models = "Models/L2BinaryClassifier", directory_data = "Example_Problems/Real_Data/UCRoutput"):  
 
 
     """
