@@ -1,42 +1,29 @@
-from Helper_Functions import data_table_to_tensors
+from DeepAttentionModel.Functions.Helper_Functions import data_table_to_tensors
 import torch
 import os
 from sklearn.metrics import accuracy_score
+import pandas as pd
 
 
 def model_predictions(model, test_inputs, device=torch.device('cuda' if torch.cuda.is_available() else 'cpu')):
-    """
-    Make predictions for a batch of inputs using the provided model.
-
-    Parameters:
-    - model (torch.nn.Module): PyTorch model for predictions.
-    - test_inputs (torch.Tensor): Batch of input data.
-    - device (torch.device): Device for model computation.
-
-    Returns:
-    - torch.Tensor: Rounded predictions.
-    """
+    model = model.to(device)
     model.eval()  # Set the model to evaluation mode
 
     with torch.no_grad():
         probabilities = model(test_inputs)
         predictions = torch.round(probabilities)
     return predictions
+#
+def validate_all_models_on_all_datasets(models_dir, datasets_dir, include_train_datasets=True):
+    for saved_model in models_dir:
+        for datasets in datasets_dir:
+            model.load(saved_model)
+            classes_tensor, time_series_tensor = data_table_to_tensors(dataset_path, 'csv')
+            
+
 
 
 def compare_models(models, test_inputs, test_labels, metric=accuracy_score):
-    """
-    Compare multiple models based on a specified metric.
-
-    Parameters:
-    - models (dict): Dictionary of model names and corresponding PyTorch models.
-    - test_inputs (torch.Tensor): Batch of input data.
-    - test_labels (torch.Tensor): Ground truth labels.
-    - metric (function): Evaluation metric function.
-
-    Returns:
-    - tuple: Lists of model names and corresponding metric values.
-    """
     model_name_list = []
     metric_list = []
     for model_name, model in models.items():
@@ -69,16 +56,6 @@ def get_all_datasets(directory):
     return datasets
 
 def validate_and_compare(directory_models = "Models/L2BinaryClassifier", directory_data = "Example_Problems/Real_Data/UCRoutput"):  
-
-
-    """
-    classes_tensor, time_series_tensor = data_table_to_tensors(dataset_path, 'csv')
-
-    models = torch.load(trained_model_path)
-    model.eval()
-
-    predicted_classes_tensor = model_predictions(model, time_series_tensor)
-    """
 
 
 if __name__=="__main__":

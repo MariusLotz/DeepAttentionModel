@@ -1,7 +1,7 @@
 import numpy as np
 import random
 import torch
-from Helper_Functions import save_to_pickle, generate_training_data
+from DeepAttentionModel.Functions.Helper_Functions import save_to_pickle, generate_training_data
 
 def create_cosine_wave(category, num_points=128):
     """

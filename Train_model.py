@@ -2,10 +2,9 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader, TensorDataset
-#from Models import Feature2LBinaryClassifier, SimpleBinaryClassifier,RawSimpleBinaryClassifier, Kernel_Layer_Classifier, ReduceFeature2LBinaryClassifier, N_Multirow_Attention
 from datetime import datetime
-from Signal_to_Features import signal_to_wavelet_features
-from Helper_Functions import load_from_pickle
+from DeepAttentionModel.Functions.Signal_to_Features import signal_to_wavelet_features
+from DeepAttentionModel.Functions.Helper_Functions import load_from_pickle
 from Example_Problems.FordA import FordA_preprocessing
 
 

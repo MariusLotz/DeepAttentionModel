@@ -1,7 +1,7 @@
 # Import fix for Codespace:
 import sys
 sys.path.append("./")
-from Helper_Functions import data_table_to_tensors
+from DeepAttentionModel.Functions.Helper_Functions import data_table_to_tensors
 import pandas as pd
 pd.options.mode.copy_on_write = True 
 

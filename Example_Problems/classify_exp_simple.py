@@ -4,7 +4,7 @@ sys.path.append("./")
 import numpy as np
 import random
 import torch
-from Helper_Functions import save_to_pickle, generate_training_data
+from DeepAttentionModel.Functions.Helper_Functions import save_to_pickle, generate_training_data
 
 
 def simple_cos_freq(category, num_points=128):

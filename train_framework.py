@@ -1,6 +1,6 @@
 import torch
 import os
-from Helper_Functions import data_table_to_tensors
+from DeepAttentionModel.Functions.Helper_Functions import data_table_to_tensors
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader, TensorDataset
@@ -17,7 +17,6 @@ def make_folder(folder_name, path):
     else:
         print(f"Folder '{folder_name}' already exists at '{path}'")
 
-
 def train_model_on_datasets(model_class, param_list, dataset_dir, trained_models_dir):
     for folder_name in os.listdir(dataset_dir):  # Iterate over each folder in the rdataset directory
         folder_path = os.path.join(dataset_dir, folder_name)
@@ -30,7 +29,7 @@ def train_model_on_datasets(model_class, param_list, dataset_dir, trained_models
                         train_model_on_dataset(model_class, dataset_path, param_list, trained_models_dir)
                     except Exception as e:
                         print(f" There was a problem training {file_name} on {model_class.__name__}, so it was skipped!")
-                        print(e)
+                        print(eq)
 
 
 def train_model_on_dataset(model_class, dataset_path, param, trained_models_dir, batch_size=512, num_epochs=1000, 

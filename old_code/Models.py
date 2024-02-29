@@ -1,11 +1,10 @@
 import torch
 import torch.nn as nn
-from Signal_to_Features import signal_to_wavelet_features, WaveletMatrixLayer
-from ProcessingLayer import ProcessingLayer, ReduceProcessingLayer, Signal_to_x
-from End_Layers import L2BinaryClassifier
-from torchsummary import summary # not working yet
-from Kernel_Layers import RBF_Kernel_Layer
-from SingleHeadAttentionLayer import Encoder
+from DeepAttentionModel.Functions.Signal_to_Features import signal_to_wavelet_features, WaveletMatrixLayer
+from DeepAttentionModel.Layer.ProcessingLayer import ProcessingLayer, ReduceProcessingLayer, Signal_to_x
+from DeepAttentionModel.Layer.End_Layers import L2BinaryClassifier
+from DeepAttentionModel.Layer.Kernel_Layers import RBF_Kernel_Layer
+from DeepAttentionModel.Layer.SingleHeadAttentionLayer import Encoder
 
 class RawSimpleBinaryClassifier(nn.Module):
     """
