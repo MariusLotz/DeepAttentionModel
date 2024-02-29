@@ -2,12 +2,11 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader, TensorDataset
-from Models import Feature2LBinaryClassifier, SimpleBinaryClassifier,RawSimpleBinaryClassifier, Kernel_Layer_Classifier, ReduceFeature2LBinaryClassifier, N_Multirow_Attention
+#from Models import Feature2LBinaryClassifier, SimpleBinaryClassifier,RawSimpleBinaryClassifier, Kernel_Layer_Classifier, ReduceFeature2LBinaryClassifier, N_Multirow_Attention
 from datetime import datetime
 from Signal_to_Features import signal_to_wavelet_features
 from Helper_Functions import load_from_pickle
-from Example_Problems.FordA import FordA_preprocessing#
-
+from Example_Problems.FordA import FordA_preprocessing
 
 
 def preprocess_data(file_dest):
@@ -44,11 +43,15 @@ def train_model(model, data_loader, criterion, optimizer, epochs):
     Returns:
     - model (nn.Module): The trained PyTorch model.
     """
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    #print("Using GPU:", torch.cuda.get_device_name(device))
+    model = model.to(device)
     model.train()
     torch.autograd.set_detect_anomaly(True)
 
     for epoch in range(epochs):
         for inputs, targets in data_loader:
+            inputs, targets = inputs.to(device), targets.to(device)  # Move data to GPU if available
             predictions = model(inputs)
             targets = targets.view(-1, 1)
             loss = criterion(predictions, targets)
