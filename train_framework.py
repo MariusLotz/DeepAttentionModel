@@ -5,7 +5,7 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader, TensorDataset
 from Train_model import train_model
-from Model_classes.L2BinaryClassifier import L2BinaryClassifier
+from Models.model_classes.L2BinaryClassifier import L2BinaryClassifier
 
 #models = {L2BinaryClassifier:[p1,p2,p3], L2BinaryClassifier2:[p1,p2,p3], }
 
@@ -29,7 +29,7 @@ def train_model_on_datasets(model_class, param_list, dataset_dir, trained_models
                         train_model_on_dataset(model_class, dataset_path, param_list, trained_models_dir)
                     except Exception as e:
                         print(f" There was a problem training {file_name} on {model_class.__name__}, so it was skipped!")
-                        print(eq)
+                        print(e)
 
 
 def train_model_on_dataset(model_class, dataset_path, param, trained_models_dir, batch_size=512, num_epochs=1000, 

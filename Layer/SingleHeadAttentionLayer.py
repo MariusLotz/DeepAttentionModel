@@ -1,6 +1,6 @@
 import torch.nn as nn
 import torch
-from Attention import attention
+from DeepAttentionModel.Functions.Attention import attention
 import numpy as np
 import torch.nn.functional as F
 
