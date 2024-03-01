@@ -34,8 +34,6 @@ def get_paths_to_trained_models(models_dir, dataset_name):
                      paths.append(os.path.join(folder_path, file_name))
     return paths
 
-
-
 def validate_all_models_on_all_datasets(models_dir="Models/trained_models", datasets_dir="Example_Problems/my_benchmark_dataset", metric=accuracy_score, include_train_datasets=False):
     """Code needs adjusting in the future"""
     datasets_paths = get_paths_to_datasets(datasets_dir)

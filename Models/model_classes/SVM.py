@@ -7,7 +7,6 @@ train_labels, train_inputs = FordA_preprocessing()
 test_labels, test_inputs = FordA_preprocessing()
 
 
-
 # Create the SVM model with RBF kernel
 svm_model = SVC(kernel='rbf', C=0.98, gamma='scale', random_state=42)
 

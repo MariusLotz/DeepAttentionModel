@@ -6,8 +6,8 @@ import torch.optim as optim
 from torch.utils.data import DataLoader, TensorDataset
 from Train_model import train_model
 from Models.model_classes.L2BinaryClassifier import L2BinaryClassifier
+from Models.model_classes.WaveletMatrix_N_Attention import WaveletMatrix_N_Attention
 
-#models = {L2BinaryClassifier:[p1,p2,p3], L2BinaryClassifier2:[p1,p2,p3], }
 
 def make_folder(folder_name, path):
     folder_path = os.path.join(path, folder_name)
@@ -16,6 +16,7 @@ def make_folder(folder_name, path):
         print(f"Folder '{folder_name}' created successfully at '{path}'")
     else:
         print(f"Folder '{folder_name}' already exists at '{path}'")
+
 
 def train_model_on_datasets(model_class, param_list, dataset_dir, trained_models_dir):
     for folder_name in os.listdir(dataset_dir):  # Iterate over each folder in the rdataset directory
@@ -34,7 +35,6 @@ def train_model_on_datasets(model_class, param_list, dataset_dir, trained_models
 
 def train_model_on_dataset(model_class, dataset_path, param, trained_models_dir, batch_size=512, num_epochs=1000, 
                             criterion=nn.BCELoss(), optimizer=optim.Adam):
-    
     classes_tensor, time_series_tensor = data_table_to_tensors(dataset_path, 'csv')
     model = model_class(*param)
     my_optimizer = optimizer(model.parameters())
@@ -51,17 +51,7 @@ def train_models_on_datasets(models, dataset_dir, trained_models_dir="DeepAttent
         train_model_on_datasets(model_class, param_list, dataset_dir, trained_models_dir)  # train one model on all datasets
        
 
-def example_train_model_on_dataset():
-    """
-    Example function to demonstrate usage of train_model_on_dataset.
-    """
-    param = [64,16]
-    model_class = L2BinaryClassifier
-    dataset_path = 'Example_Problems/Real_Data/UCRoutput/Adiac/Adiac_TRAIN.tsv'
-    model_path = train_model_on_dataset(model_class, dataset_path, param)
-    print("Trained model saved at:", model_path)
-
-# Example usage when __name__ == '__main__':
 if __name__ == '__main__':
-    #example_train_model_on_dataset()
-    train_models_on_datasets({L2BinaryClassifier:[64,32]},"DeepAttentionModel/Example_Problems/my_benchmark_dataset")
+    #models = {L2BinaryClassifier:[p1,p2,p3], L2BinaryClassifier2:[p1,p2,p3], }
+    #train_models_on_datasets({L2BinaryClassifier:[64,32]},"DeepAttentionModel/Example_Problems/my_benchmark_dataset")
+    train_models_on_datasets({WaveletMatrix_N_Attention:[1,]},"DeepAttentionModel/Example_Problems/my_benchmark_dataset")
