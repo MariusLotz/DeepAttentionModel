@@ -31,16 +31,6 @@ def preprocess_data(file_dest):
 def train_model(model, data_loader, criterion, optimizer, epochs):
     """
     Train a PyTorch model.
-
-    Parameters:
-    - model (nn.Module): The PyTorch model to be trained.
-    - data_loader (DataLoader): DataLoader for loading training data.
-    - criterion: The loss criterion used for training.
-    - optimizer: The optimizer used for updating model parameters.
-    - epochs (int): Number of training epochs.
-
-    Returns:
-    - model (nn.Module): The trained PyTorch model.
     """
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     #print("Using GPU:", torch.cuda.get_device_name(device))

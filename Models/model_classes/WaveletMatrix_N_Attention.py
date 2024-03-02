@@ -1,51 +1,40 @@
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 from DeepAttentionModel.Functions.Signal_to_Features import WaveletMatrixLayer
 from DeepAttentionModel.Models.model_classes.L2BinaryClassifier import L2BinaryClassifier
-from DeepAttentionModel.Layer.SingleHeadAttentionLayer import Encoder
+from DeepAttentionModel.Layer.LazySingleHeadAttention_Layer import LazySingleHeadAttention_Layer
 
 class WaveletMatrix_N_Attention(nn.Module):
     """
     Inputs gets transformed into WaveletMatrix and passes through (N=1) Attention-Layers,
-    where input_size gets calculated by first use.
+    where input is projected onto projection size.
     """
-    def __init__(self, N):
+    def __init__(self, projection_size, N=1):
         super(WaveletMatrix_N_Attention, self).__init__()
         self.N = N
-        self.signal_size = None
-        self.initialized = False
-        self.input_size = None
+        self.projection_size = projection_size
         self.Signal_to_WaveletMatrix = WaveletMatrixLayer()
-        self.Attention_Encoder = None
-        self.last_layer = None
+        self.AttentionLayer = LazySingleHeadAttention_Layer(self.projection_size)
+        self.linear_1 = nn.LazyLinear(self.projection_size)
+        self.linear_2 = nn.LazyLinear(1)
 
-        
-    def init_layer(self, signal_size):
-        test_signal = torch.rand(1, signal_size)
-        self.Attention_Encoder = Encoder(self.N, self.Signal_to_WaveletMatrix(test_signal).size(-1))
-        self.last_layer = L2BinaryClassifier(signal_size, signal_size)
-
-
-    def forward(self, x):
-        if not self.initialized:
-            self.signal_size = x.size(1)
-            self.init_layer(self.signal_size)
-            self.initialized = True
-        
+    def forward(self, x):        
         x = self.Signal_to_WaveletMatrix(x)
-        x = self.Attention_Encoder(x)
+        x = self.AttentionLayer(x)
         x = x.flatten(start_dim=1)
-        x = self.last_layer(x)
+        x = F.sigmoid(self.linear_1(x))
+        x = F.sigmoid(self.linear_2(x))
         return x
     
 
 def test():
     signal_size = 8  # Define the signal size for testing
     N = 1  # Number of attention layers
-    model = WaveletMatrix_N_Attention(N)
-    print(model.parameters())
-    print(model)
-    print(list(model.children()))
+    model = WaveletMatrix_N_Attention(2)
+    #print(model.parameters())
+    #print(model)
+    #print(list(model.children()))
     batch_size = 2
     input_signals = torch.randn(batch_size, signal_size)
     output = model(input_signals)
@@ -53,4 +42,5 @@ def test():
     print(output)
 
 if __name__ == "__main__":
-    test()
+    #test()
+    pass

@@ -54,4 +54,4 @@ def train_models_on_datasets(models, dataset_dir, trained_models_dir="DeepAttent
 if __name__ == '__main__':
     #models = {L2BinaryClassifier:[p1,p2,p3], L2BinaryClassifier2:[p1,p2,p3], }
     #train_models_on_datasets({L2BinaryClassifier:[64,32]},"DeepAttentionModel/Example_Problems/my_benchmark_dataset")
-    train_models_on_datasets({WaveletMatrix_N_Attention:[1,]},"DeepAttentionModel/Example_Problems/my_benchmark_dataset")
+    train_models_on_datasets({WaveletMatrix_N_Attention:[64]},"DeepAttentionModel/Example_Problems/my_benchmark_dataset")
