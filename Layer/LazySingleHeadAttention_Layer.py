@@ -31,7 +31,6 @@ class LazySingleHeadAttention_Layer(nn.Module):
         q = self.W_q(x)
         k = self.W_k(x)
         v = self.W_v(x)
-        #print(q, k, v)
 
         # Scaled Dot-Product Attention
         attention_based_v = attention(q, k, v)

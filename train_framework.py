@@ -7,6 +7,7 @@ from torch.utils.data import DataLoader, TensorDataset
 from Train_model import train_model
 from Models.model_classes.L2BinaryClassifier import L2BinaryClassifier
 from Models.model_classes.WaveletMatrix_N_Attention import WaveletMatrix_N_Attention
+from Models.model_classes.MultiPatternAttention_Classifier import MultiPatternAttention_Classifier
 
 
 def make_folder(folder_name, path):
@@ -45,7 +46,7 @@ def train_model_on_dataset(model_class, dataset_path, param, trained_models_dir,
     torch.save(trained_model, model_path_trained[:-4])  # remove .csv at the end
 
 
-def train_models_on_datasets(models, dataset_dir, trained_models_dir="DeepAttentionModel/Models/trained_models"):
+def train_models_on_datasets(models, dataset_dir, trained_models_dir="Models/trained_models"):
     for model_class, param_list in models.items():
         make_folder(model_class.__name__, trained_models_dir)  # create folder
         train_model_on_datasets(model_class, param_list, dataset_dir, trained_models_dir)  # train one model on all datasets
@@ -54,4 +55,5 @@ def train_models_on_datasets(models, dataset_dir, trained_models_dir="DeepAttent
 if __name__ == '__main__':
     #models = {L2BinaryClassifier:[p1,p2,p3], L2BinaryClassifier2:[p1,p2,p3], }
     #train_models_on_datasets({L2BinaryClassifier:[64,32]},"DeepAttentionModel/Example_Problems/my_benchmark_dataset")
-    train_models_on_datasets({WaveletMatrix_N_Attention:[64]},"DeepAttentionModel/Example_Problems/my_benchmark_dataset")
+    #train_models_on_datasets({WaveletMatrix_N_Attention:[64]},"DeepAttentionModel/Example_Problems/my_benchmark_dataset")
+    train_models_on_datasets({MultiPatternAttention_Classifier:[]},"Example_Problems/my_benchmark_dataset")

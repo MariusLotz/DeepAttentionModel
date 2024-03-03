@@ -1,9 +1,9 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from DeepAttentionModel.Functions.Signal_to_Features import WaveletMatrixLayer
-from DeepAttentionModel.Models.model_classes.L2BinaryClassifier import L2BinaryClassifier
-from DeepAttentionModel.Layer.LazySingleHeadAttention_Layer import LazySingleHeadAttention_Layer
+from Layer.WaveletMatrixLayer import WaveletMatrixLayer
+from Models.model_classes.L2BinaryClassifier import L2BinaryClassifier
+from Layer.LazySingleHeadAttention_Layer import LazySingleHeadAttention_Layer
 
 class WaveletMatrix_N_Attention(nn.Module):
     """
