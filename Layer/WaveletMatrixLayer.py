@@ -11,7 +11,7 @@ class WaveletMatrixLayer(nn.Module):
         super(WaveletMatrixLayer, self).__init__()
         self.wavelet = wavelet
 
-    """def forward(self, signals):
+    def forward(self, signals):
         coeffs_list = [pywt.wavedec(signal.numpy(), self.wavelet) for signal in signals] # Apply wavelet transform to each signal in the batch
         max_len = max(len(c) for coeffs in coeffs_list for c in coeffs)  # Find the length of the longest coefficient vector
         padded_coeffs = [
@@ -19,13 +19,15 @@ class WaveletMatrixLayer(nn.Module):
             for coeffs in coeffs_list for c in coeffs
         ] # Pad the coefficient vectors with zeros to create a matrix
         wavelet_matrices = torch.stack(padded_coeffs, dim=0).view(len(signals), -1, max_len) # Stack the padded coefficient matrices to create a batch tensor
-        return wavelet_matrices"""
+        return wavelet_matrices
+    """
     
     def forward(self, signals):
         for signal in signals:
             coeff_list = pywt.wavedec(signal.numpy(), self.wavelet)
             for coeff in coeff_list:
                 print(coeff)
+                """
        
    
 
