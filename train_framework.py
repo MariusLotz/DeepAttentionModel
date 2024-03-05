@@ -8,6 +8,7 @@ from Train_model import train_model
 from Models.model_classes.L2BinaryClassifier import L2BinaryClassifier
 from Models.model_classes.WaveletMatrix_N_Attention import WaveletMatrix_N_Attention
 from Models.model_classes.MultiPatternAttention_Classifier import MultiPatternAttention_Classifier
+from Models.model_classes.WaveletMatrix_N_MultiheadAttention import WaveletMatrix_N_MultiheadAttention
 
 
 def make_folder(folder_name, path):
@@ -54,6 +55,7 @@ def train_models_on_datasets(models, dataset_dir, trained_models_dir="Models/tra
 
 if __name__ == '__main__':
     #models = {L2BinaryClassifier:[p1,p2,p3], L2BinaryClassifier2:[p1,p2,p3], }
-    #train_models_on_datasets({L2BinaryClassifier:[64,32]},"DeepAttentionModel/Example_Problems/my_benchmark_dataset")
-    #train_models_on_datasets({WaveletMatrix_N_Attention:[64]},"DeepAttentionModel/Example_Problems/my_benchmark_dataset")
-    train_models_on_datasets({MultiPatternAttention_Classifier:[]},"Example_Problems/my_benchmark_dataset")
+    #train_models_on_datasets({L2BinaryClassifier:[64,32]},"Example_Problems/my_benchmark_dataset")
+    #train_models_on_datasets({WaveletMatrix_N_Attention:[64]},"Example_Problems/my_benchmark_dataset")
+    #train_models_on_datasets({MultiPatternAttention_Classifier:[]},"Example_Problems/my_benchmark_dataset")
+    train_models_on_datasets({WaveletMatrix_N_MultiheadAttention:[64]},"Example_Problems/my_benchmark_dataset")
