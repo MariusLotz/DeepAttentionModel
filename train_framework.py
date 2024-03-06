@@ -35,7 +35,7 @@ def train_model_on_datasets(model_class, param_list, dataset_dir, trained_models
                         print(e)
 
 
-def train_model_on_dataset(model_class, extra_model_info, dataset_path, param, trained_models_dir, batch_size=512, num_epochs=1000, 
+def train_model_on_dataset(model_class, dataset_path, param, trained_models_dir, batch_size=512, num_epochs=1000, 
                             criterion=nn.BCELoss(), optimizer=optim.Adam):
     classes_tensor, time_series_tensor = data_table_to_tensors(dataset_path, 'csv')
     model = model_class(*param)
