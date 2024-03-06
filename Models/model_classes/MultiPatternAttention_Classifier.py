@@ -39,13 +39,15 @@ class MultiPatternAttention_Classifier_with_Wavelettrafo(nn.Module):
 
 
 class MultiPatternAttention_Classifier(nn.Module):
-    def __init__(self, d_I=16, d_e=64, h=4,  wavelet='db1'):
+    def __init__(self, d_I=32, d_e=32, d_k=15, h=3):
         super(MultiPatternAttention_Classifier, self).__init__()
         self.d_I = d_I
         self.d_e = d_e
-        self.d_k = int(0.25 * d_e)
+        if d_k == None:
+            self.d_k = int(0.25 * d_e)
+        else:
+            self.d_k = d_k
         self.h = h
-        self.wavelet = wavelet
         self.linear_layers = nn.ModuleList([nn.LazyLinear(self.d_e) for _ in range(self.d_I)])
         self.MH_Attention = MultiheadAttentionLayer(self.d_e, self.d_k, self.d_k, 1, self.h)
         self.last_layer = nn.Linear(self.d_I, 1)
