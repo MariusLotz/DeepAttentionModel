@@ -7,7 +7,7 @@ from torch.utils.data import DataLoader, TensorDataset
 from Train_model import train_model
 from Models.model_classes.L2BinaryClassifier import L2BinaryClassifier
 from Models.model_classes.WaveletMatrix_N_Attention import WaveletMatrix_N_Attention
-from Models.model_classes.MultiPatternAttention_Classifier import MultiPatternAttention_Classifier
+from Models.model_classes.MultiPatternAttention_Classifier import MultiPatternAttention_Classifier, MultiPatternAttention_Classifier_with_Wavelettrafo
 from Models.model_classes.WaveletMatrix_N_MultiheadAttention import WaveletMatrix_N_MultiheadAttention
 
 
@@ -58,4 +58,5 @@ if __name__ == '__main__':
     #train_models_on_datasets({L2BinaryClassifier:[64,32]},"Example_Problems/my_benchmark_dataset")
     #train_models_on_datasets({WaveletMatrix_N_Attention:[64]},"Example_Problems/my_benchmark_dataset")
     #train_models_on_datasets({MultiPatternAttention_Classifier:[]},"Example_Problems/my_benchmark_dataset")
-    train_models_on_datasets({WaveletMatrix_N_MultiheadAttention:[64]},"Example_Problems/my_benchmark_dataset")
+    #train_models_on_datasets({WaveletMatrix_N_MultiheadAttention:[64]},"Example_Problems/my_benchmark_dataset")
+    train_models_on_datasets({MultiPatternAttention_Classifier_with_Wavelettrafo:[]},"Example_Problems/my_benchmark_dataset")
