@@ -39,7 +39,7 @@ class MultiPatternAttention_Classifier_with_Wavelettrafo(nn.Module):
 
 
 class MultiPatternAttention_Classifier(nn.Module):
-    def __init__(self, d_I=32, d_e=32, d_k=15, h=3):
+    def __init__(self, d_I=20, d_e=80, d_k=40, h=8):
         super(MultiPatternAttention_Classifier, self).__init__()
         self.d_I = d_I
         self.d_e = d_e
