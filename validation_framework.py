@@ -5,7 +5,7 @@ from sklearn.metrics import accuracy_score
 import pandas as pd
 import re
 
-def model_predictions(model, test_inputs, device=torch.device('cuda' if torch.cuda.is_available() else 'cpu')):
+def model_predictions(model, test_inputs, device=torch.device('cpu')):
     model = model.to(device)
     model.eval()  # Set the model to evaluation mode
 

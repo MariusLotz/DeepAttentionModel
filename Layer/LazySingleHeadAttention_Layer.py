@@ -1,5 +1,5 @@
 import torch.nn as nn
-from DeepAttentionModel.Functions.Attention import attention
+from Functions.Attention import attention
 
 class LazySingleHeadAttention_Layer(nn.Module):
     def __init__(self, output_size, bias=False, dropout=0.1, trainable=True):

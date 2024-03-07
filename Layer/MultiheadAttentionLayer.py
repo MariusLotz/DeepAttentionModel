@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from DeepAttentionModel.Functions.Attention import attention
+from Functions.Attention import attention
 
 class MultiheadAttentionLayer(nn.Module):
     def __init__(self, dim_e, dim_k, dim_v, dim_o, num_heads, bias=False, dropout=0.1, trainable=True):

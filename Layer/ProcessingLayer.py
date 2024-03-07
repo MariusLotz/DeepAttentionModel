@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
-from DeepAttentionModel.Layer.MultiheadAttentionLayer import MultiheadAttentionLayer
-from DeepAttentionModel.Layer.SingleHeadAttentionLayer import SingleAttentionLikeLayer
+from Layer.MultiheadAttentionLayer import MultiheadAttentionLayer
+from Layer.SingleHeadAttentionLayer import SingleAttentionLikeLayer
 
 class ProcessingLayer(nn.Module):
     """

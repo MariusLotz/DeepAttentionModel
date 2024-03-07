@@ -1,6 +1,6 @@
 import torch
 import os
-from DeepAttentionModel.Functions.Helper_Functions import data_table_to_tensors
+from Functions.Helper_Functions import data_table_to_tensors
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader, TensorDataset
@@ -26,7 +26,7 @@ def train_model_on_datasets(model_class, param_list, dataset_dir, trained_models
         if os.path.isdir(folder_path):  # Check if the item is a directory
             for file_name in os.listdir(folder_path):  # Iterate over each file in the directory
                 if file_name.endswith('_TRAIN.csv'):
-                    try:
+                    try: 
                         dataset_path = os.path.join(folder_path, file_name)
                         print(f"Starting to train {model_class.__name__} on {file_name}")
                         train_model_on_dataset(model_class, dataset_path, param_list, trained_models_dir)

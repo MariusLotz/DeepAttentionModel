@@ -3,8 +3,8 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader, TensorDataset
 from datetime import datetime
-from DeepAttentionModel.Functions.Signal_to_Features import signal_to_wavelet_features
-from DeepAttentionModel.Functions.Helper_Functions import load_from_pickle
+from Functions.Signal_to_Features import signal_to_wavelet_features
+from Functions.Helper_Functions import load_from_pickle
 from Example_Problems.FordA import FordA_preprocessing
 
 
@@ -32,8 +32,7 @@ def train_model(model, data_loader, criterion, optimizer, epochs):
     """
     Train a PyTorch model.
     """
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    #print("Using GPU:", torch.cuda.get_device_name(device))
+    device = torch.device("cpu")
     model = model.to(device)
     model.train()
     torch.autograd.set_detect_anomaly(True)
