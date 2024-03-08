@@ -1,5 +1,6 @@
 import torch
 import os
+import csv
 from Functions.Helper_Functions import data_table_to_tensors
 import torch.nn as nn
 import torch.optim as optim
@@ -19,6 +20,24 @@ def make_folder(folder_name, path):
     else:
         print(f"Folder '{folder_name}' already exists at '{path}'")
 
+def check_csv(file_path):
+    # Read the CSV file
+    with open(file_path, 'r') as file:
+        reader = csv.reader(file)
+        rows = list(reader)
+    # Check if all columns have the same length
+    col_length = len(rows[0])
+    if not all(len(row) == col_length for row in rows):
+        return False  # Columns have different lengths
+    # Check if there are any empty entries in any column
+    for col_index in range(col_length):
+        for row in rows:
+            entry = row[col_index].strip()  # Strip any leading/trailing whitespace
+            if not entry:
+                #print(f"empty entry in column {col_index}")
+                return False  # Empty entry found in column
+    
+    return True  # All checks passed
 
 def train_model_on_datasets(model_class, param_list, dataset_dir, trained_models_dir):
     for folder_name in os.listdir(dataset_dir):  # Iterate over each folder in the rdataset directory
@@ -26,13 +45,12 @@ def train_model_on_datasets(model_class, param_list, dataset_dir, trained_models
         if os.path.isdir(folder_path):  # Check if the item is a directory
             for file_name in os.listdir(folder_path):  # Iterate over each file in the directory
                 if file_name.endswith('_TRAIN.csv'):
-                    try: 
-                        dataset_path = os.path.join(folder_path, file_name)
+                    dataset_path = os.path.join(folder_path, file_name)
+                    if check_csv(dataset_path):
                         print(f"Starting to train {model_class.__name__} on {file_name}")
                         train_model_on_dataset(model_class, dataset_path, param_list, trained_models_dir)
-                    except Exception as e:
-                        print(f" There was a problem training {file_name} on {model_class.__name__}, so it was skipped!")
-                        print(e)
+                    else:
+                        print(f"Skipped training for {model_class.__name__} on {file_name}")
 
 
 def train_model_on_dataset(model_class, dataset_path, param, trained_models_dir, batch_size=512, num_epochs=1000, 
@@ -44,7 +62,7 @@ def train_model_on_dataset(model_class, dataset_path, param, trained_models_dir,
     my_data_loader = DataLoader(my_dataset, batch_size=batch_size, shuffle=True)
     trained_model = train_model(model, my_data_loader, criterion, my_optimizer, epochs=num_epochs)
     model_path_trained = f"{trained_models_dir}/{model_class.__name__}/{model_class.__name__}_{dataset_path.split('/')[-1]}"
-    torch.save(trained_model, model_path_trained[:-4])  # remove .csv at the end
+    torch.save(trained_model.state_dict(), model_path_trained[:-4])  # remove .csv at the end
 
 
 def train_models_on_datasets(models, dataset_dir, trained_models_dir="Models/trained_models"):
@@ -60,4 +78,4 @@ if __name__ == '__main__':
     #train_models_on_datasets({MultiPatternAttention_Classifier:[]},"Example_Problems/my_benchmark_dataset")
     #train_models_on_datasets({WaveletMatrix_N_MultiheadAttention:[64]},"Example_Problems/my_benchmark_dataset")
     #train_models_on_datasets({MultiPatternAttention_Classifier_with_Wavelettrafo:[]},"Example_Problems/my_benchmark_dataset")
-    train_models_on_datasets({MultiPatternAttention_Classifier:[]},"Example_Problems/my_benchmark_dataset")
+    train_models_on_datasets({MultiPatternAttention_Classifier:[25, 32, 16, 4]},"Example_Problems/my_benchmark_dataset")

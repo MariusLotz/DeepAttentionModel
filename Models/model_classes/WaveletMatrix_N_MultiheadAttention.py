@@ -5,7 +5,7 @@ from Layer.WaveletMatrixLayer import WaveletMatrixLayer
 from Layer.MultiheadAttentionLayer import MultiheadAttentionLayer
 
 class WaveletMatrix_N_MultiheadAttention(nn.Module):
-    def __init__(self, projection_size, heads=8):
+    def __init__(self, projection_size, heads):
         super(WaveletMatrix_N_MultiheadAttention, self).__init__()
         self.projection_size = projection_size
         self.Signal_to_WaveletMatrix = WaveletMatrixLayer()
