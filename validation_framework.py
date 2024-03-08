@@ -68,8 +68,10 @@ def validate_all_models_on_all_datasets(models_classes_params, models_dir="Model
     
     df = pd.DataFrame(my_dict) 
     df_mean = df.mean(axis=1)
-    print(df_mean)     
-    print(df.transpose())  
+    print()
+    print(f" mean_accuracy: {df_mean}")     
+    print(df.transpose().dropna())
+   
 
 if __name__=="__main__":
     # Example usage
